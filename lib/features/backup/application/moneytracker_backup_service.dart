@@ -127,11 +127,13 @@ abstract final class MoneyTrackerBackupService {
     try {
       final json = jsonDecode(source) as Map<String, dynamic>;
       if (json['format'] != format) {
-        throw const BackupFormatException('This is not a MoneyTracker Pro backup.');
+        throw const BackupFormatException(
+            'This is not a MoneyTracker Pro backup.');
       }
       final version = json['schemaVersion'] as int;
       if (version < 1 || version > schemaVersion) {
-        throw BackupFormatException('Unsupported backup version: ${json['schemaVersion']}.');
+        throw BackupFormatException(
+            'Unsupported backup version: ${json['schemaVersion']}.');
       }
 
       final settingsJson = json['settings'] as Map<String, dynamic>;
@@ -140,13 +142,17 @@ abstract final class MoneyTrackerBackupService {
         monthlyBudget: (settingsJson['monthlyBudget'] as num).toDouble(),
         budgetAlertsEnabled: settingsJson['budgetAlertsEnabled'] as bool,
       );
-      if (settings.displayName.trim().length < 2 || settings.monthlyBudget <= 0) {
-        throw const BackupFormatException('Backup settings contain invalid values.');
+      if (settings.displayName.trim().length < 2 ||
+          settings.monthlyBudget <= 0) {
+        throw const BackupFormatException(
+            'Backup settings contain invalid values.');
       }
 
       final transactionJson = json['transactions'] as List<dynamic>;
       final transactions = transactionJson
-          .map((item) => TransactionRecord.fromJson(item as Map<String, dynamic>).toEntity())
+          .map((item) =>
+              TransactionRecord.fromJson(item as Map<String, dynamic>)
+                  .toEntity())
           .toList();
 
       final accounts = version == 1
@@ -156,16 +162,19 @@ abstract final class MoneyTrackerBackupService {
               return FinanceAccount(
                 id: account['id'] as String,
                 name: account['name'] as String,
-                type: FinanceAccountType.values.byName(account['type'] as String),
+                type:
+                    FinanceAccountType.values.byName(account['type'] as String),
                 isArchived: account['isArchived'] as bool? ?? false,
               );
             }).toList();
-      if (accounts.isEmpty || accounts.map((item) => item.id).toSet().length != accounts.length) {
+      if (accounts.isEmpty ||
+          accounts.map((item) => item.id).toSet().length != accounts.length) {
         throw const BackupFormatException('Backup contains invalid accounts.');
       }
       final accountIds = accounts.map((item) => item.id).toSet();
       if (transactions.any((item) => !accountIds.contains(item.accountId))) {
-        throw const BackupFormatException('A transaction references an account missing from the backup.');
+        throw const BackupFormatException(
+            'A transaction references an account missing from the backup.');
       }
 
       final recurringRules = version < 3
@@ -179,7 +188,8 @@ abstract final class MoneyTrackerBackupService {
                 type: TransactionType.values.byName(rule['type'] as String),
                 category: rule['category'] as String,
                 accountId: rule['accountId'] as String,
-                frequency: RecurringFrequency.values.byName(rule['frequency'] as String),
+                frequency: RecurringFrequency.values
+                    .byName(rule['frequency'] as String),
                 nextDueDate: DateTime.parse(rule['nextDueDate'] as String),
                 isPaused: rule['isPaused'] as bool? ?? false,
               );
@@ -188,12 +198,14 @@ abstract final class MoneyTrackerBackupService {
           rule.title.trim().isEmpty ||
           rule.amount <= 0 ||
           !accountIds.contains(rule.accountId))) {
-        throw const BackupFormatException('Backup contains invalid recurring transactions.');
+        throw const BackupFormatException(
+            'Backup contains invalid recurring transactions.');
       }
-      if (recurringRules.map((rule) => rule.id).toSet().length != recurringRules.length) {
-        throw const BackupFormatException('Backup contains duplicate recurring rule IDs.');
+      if (recurringRules.map((rule) => rule.id).toSet().length !=
+          recurringRules.length) {
+        throw const BackupFormatException(
+            'Backup contains duplicate recurring rule IDs.');
       }
-
 
       final savingsGoals = version < 4
           ? const <SavingsGoal>[]
@@ -211,12 +223,14 @@ abstract final class MoneyTrackerBackupService {
           goal.name.trim().isEmpty ||
           goal.targetAmount <= 0 ||
           !accountIds.contains(goal.accountId))) {
-        throw const BackupFormatException('Backup contains invalid savings goals.');
+        throw const BackupFormatException(
+            'Backup contains invalid savings goals.');
       }
-      if (savingsGoals.map((goal) => goal.id).toSet().length != savingsGoals.length) {
-        throw const BackupFormatException('Backup contains duplicate savings goal IDs.');
+      if (savingsGoals.map((goal) => goal.id).toSet().length !=
+          savingsGoals.length) {
+        throw const BackupFormatException(
+            'Backup contains duplicate savings goal IDs.');
       }
-
 
       final categories = version < 5
           ? TransactionCategories.defaults()
@@ -225,18 +239,23 @@ abstract final class MoneyTrackerBackupService {
               return TransactionCategory(
                 id: category['id'] as String,
                 name: category['name'] as String,
-                icon: IconData(category['iconCodePoint'] as int, fontFamily: 'MaterialIcons'),
+                icon: IconData(category['iconCodePoint'] as int,
+                    fontFamily: 'MaterialIcons'),
                 color: Color(category['colorValue'] as int),
                 type: TransactionType.values.byName(category['type'] as String),
                 isArchived: category['isArchived'] as bool? ?? false,
                 isSystem: category['isSystem'] as bool? ?? false,
               );
             }).toList();
-      if (categories.isEmpty || categories.map((item) => item.id).toSet().length != categories.length) {
-        throw const BackupFormatException('Backup contains invalid categories.');
+      if (categories.isEmpty ||
+          categories.map((item) => item.id).toSet().length !=
+              categories.length) {
+        throw const BackupFormatException(
+            'Backup contains invalid categories.');
       }
       if (categories.any((item) => item.name.trim().isEmpty)) {
-        throw const BackupFormatException('Backup contains invalid category names.');
+        throw const BackupFormatException(
+            'Backup contains invalid category names.');
       }
 
       final categoryIds = categories.map((item) => item.id).toSet();
@@ -250,11 +269,15 @@ abstract final class MoneyTrackerBackupService {
               );
             }).toList();
       if (categoryBudgets.any((budget) =>
-          budget.monthlyLimit <= 0 || !categoryIds.contains(budget.categoryId))) {
-        throw const BackupFormatException('Backup contains invalid category budgets.');
+          budget.monthlyLimit <= 0 ||
+          !categoryIds.contains(budget.categoryId))) {
+        throw const BackupFormatException(
+            'Backup contains invalid category budgets.');
       }
-      if (categoryBudgets.map((item) => item.categoryId).toSet().length != categoryBudgets.length) {
-        throw const BackupFormatException('Backup contains duplicate category budgets.');
+      if (categoryBudgets.map((item) => item.categoryId).toSet().length !=
+          categoryBudgets.length) {
+        throw const BackupFormatException(
+            'Backup contains duplicate category budgets.');
       }
 
       final debts = version < 7
@@ -280,15 +303,19 @@ abstract final class MoneyTrackerBackupService {
         throw const BackupFormatException('Backup contains invalid debts.');
       }
       if (debts.map((item) => item.id).toSet().length != debts.length) {
-        throw const BackupFormatException('Backup contains duplicate debt IDs.');
+        throw const BackupFormatException(
+            'Backup contains duplicate debt IDs.');
       }
 
       final ids = transactions.map((item) => item.id).toSet();
       if (ids.length != transactions.length) {
-        throw const BackupFormatException('Backup contains duplicate transaction IDs.');
+        throw const BackupFormatException(
+            'Backup contains duplicate transaction IDs.');
       }
-      if (transactions.any((item) => item.title.trim().isEmpty || item.amount <= 0)) {
-        throw const BackupFormatException('Backup contains invalid transactions.');
+      if (transactions
+          .any((item) => item.title.trim().isEmpty || item.amount <= 0)) {
+        throw const BackupFormatException(
+            'Backup contains invalid transactions.');
       }
 
       return MoneyTrackerBackupData(
@@ -306,9 +333,11 @@ abstract final class MoneyTrackerBackupService {
     } on FormatException {
       throw const BackupFormatException('The pasted text is not valid JSON.');
     } on TypeError {
-      throw const BackupFormatException('The backup structure is incomplete or invalid.');
+      throw const BackupFormatException(
+          'The backup structure is incomplete or invalid.');
     } on ArgumentError {
-      throw const BackupFormatException('The backup contains an unsupported account type.');
+      throw const BackupFormatException(
+          'The backup contains an unsupported account type.');
     }
   }
 }

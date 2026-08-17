@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_form_style.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../categories/presentation/controllers/category_controller.dart';
 import '../../../dashboard/presentation/controllers/dashboard_controller.dart';
@@ -22,17 +23,22 @@ class CategoryBudgetsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([controller, categoryController, dashboardController]),
+      listenable: Listenable.merge(
+          [controller, categoryController, dashboardController]),
       builder: (context, _) {
         final categories = categoryController.categories
             .where((category) => category.type == TransactionType.expense)
             .toList();
         return Scaffold(
-          appBar: AppBar(title: const Text('Category budgets', style: TextStyle(fontWeight: FontWeight.w800))),
+          appBar: AppBar(
+              title: const Text('Category budgets',
+                  style: TextStyle(fontWeight: FontWeight.w800))),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
             children: [
-              const Text('Set a monthly limit for each expense category. Transfer and reconciliation activity is excluded.', style: TextStyle(color: AppColors.textSecondary)),
+              const Text(
+                  'Set a monthly limit for each expense category. Transfer and reconciliation activity is excluded.',
+                  style: TextStyle(color: AppColors.textSecondary)),
               const SizedBox(height: 18),
               for (final category in categories) ...[
                 _BudgetCard(
@@ -63,9 +69,11 @@ class CategoryBudgetsPage extends StatelessWidget {
         .fold(0, (total, item) => total + item.amount);
   }
 
-  Future<void> _editBudget(BuildContext context, String categoryId, String categoryName) async {
+  Future<void> _editBudget(
+      BuildContext context, String categoryId, String categoryName) async {
     final existing = controller.limitFor(categoryId);
-    final textController = TextEditingController(text: existing == 0 ? '' : existing.toStringAsFixed(2));
+    final textController = TextEditingController(
+        text: existing == 0 ? '' : existing.toStringAsFixed(2));
     final amount = await showDialog<double>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -74,16 +82,26 @@ class CategoryBudgetsPage extends StatelessWidget {
           controller: textController,
           autofocus: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Monthly limit', prefixText: 'RM ', border: OutlineInputBorder()),
+          decoration: AppFormStyle.decoration(
+            label: 'Monthly limit',
+            prefixText: 'RM ',
+            icon: Icons.account_balance_wallet_outlined,
+          ),
         ),
         actions: [
           if (existing > 0)
-            TextButton(onPressed: () => Navigator.pop(dialogContext, 0.0), child: const Text('Remove')),
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.pop(dialogContext, 0.0),
+                child: const Text('Remove')),
+          TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel')),
           FilledButton(
             onPressed: () {
               final parsed = double.tryParse(textController.text.trim());
-              if (parsed != null && parsed > 0) Navigator.pop(dialogContext, parsed);
+              if (parsed != null && parsed > 0) {
+                Navigator.pop(dialogContext, parsed);
+              }
             },
             child: const Text('Save'),
           ),
@@ -127,18 +145,40 @@ class _BudgetCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(children: [
-                Container(width: 42, height: 42, decoration: BoxDecoration(color: color.withValues(alpha: .12), borderRadius: BorderRadius.circular(13)), child: Icon(icon, color: color)),
+                Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                        color: color.withValues(alpha: .12),
+                        borderRadius: BorderRadius.circular(13)),
+                    child: Icon(icon, color: color)),
                 const SizedBox(width: 12),
-                Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.w700))),
-                Text(limit <= 0 ? 'Set budget' : CurrencyFormatter.myr(limit), style: TextStyle(fontWeight: FontWeight.w700, color: limit <= 0 ? AppColors.primary : null)),
+                Expanded(
+                    child: Text(name,
+                        style: const TextStyle(fontWeight: FontWeight.w700))),
+                Text(limit <= 0 ? 'Set budget' : CurrencyFormatter.myr(limit),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: limit <= 0 ? AppColors.primary : null)),
               ]),
               if (limit > 0) ...[
                 const SizedBox(height: 14),
-                ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: ratio, minHeight: 8, backgroundColor: AppColors.background, color: over ? AppColors.expense : color)),
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                        value: ratio,
+                        minHeight: 8,
+                        backgroundColor: AppColors.background,
+                        color: over ? AppColors.expense : color)),
                 const SizedBox(height: 8),
                 Text(
-                  over ? '${CurrencyFormatter.myr(spent - limit)} over budget' : '${CurrencyFormatter.myr(spent)} spent · ${CurrencyFormatter.myr(limit - spent)} left',
-                  style: TextStyle(fontSize: 12, color: over ? AppColors.expense : AppColors.textSecondary, fontWeight: over ? FontWeight.w700 : FontWeight.w500),
+                  over
+                      ? '${CurrencyFormatter.myr(spent - limit)} over budget'
+                      : '${CurrencyFormatter.myr(spent)} spent · ${CurrencyFormatter.myr(limit - spent)} left',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: over ? AppColors.expense : AppColors.textSecondary,
+                      fontWeight: over ? FontWeight.w700 : FontWeight.w500),
                 ),
               ],
             ],

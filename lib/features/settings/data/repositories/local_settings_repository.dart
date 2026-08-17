@@ -17,9 +17,12 @@ class LocalSettingsRepository implements SettingsRepository {
   Future<AppSettings> load() async {
     const defaults = AppSettings.defaults();
     return AppSettings(
-      displayName: await _preferences.getString(_displayNameKey) ?? defaults.displayName,
-      monthlyBudget: await _preferences.getDouble(_monthlyBudgetKey) ?? defaults.monthlyBudget,
-      budgetAlertsEnabled: await _preferences.getBool(_budgetAlertsKey) ?? defaults.budgetAlertsEnabled,
+      displayName:
+          await _preferences.getString(_displayNameKey) ?? defaults.displayName,
+      monthlyBudget: await _preferences.getDouble(_monthlyBudgetKey) ??
+          defaults.monthlyBudget,
+      budgetAlertsEnabled: await _preferences.getBool(_budgetAlertsKey) ??
+          defaults.budgetAlertsEnabled,
     );
   }
 

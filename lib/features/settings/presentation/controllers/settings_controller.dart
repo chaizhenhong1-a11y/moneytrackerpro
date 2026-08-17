@@ -28,7 +28,8 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> updateProfile({required String displayName, required double monthlyBudget}) {
+  Future<bool> updateProfile(
+      {required String displayName, required double monthlyBudget}) {
     return _save(
       _settings.copyWith(
         displayName: displayName.trim(),

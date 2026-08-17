@@ -44,7 +44,8 @@ class ArchivedAccountsPage extends StatelessWidget {
                       child: const Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.archive_outlined, color: AppColors.primary),
+                          Icon(Icons.archive_outlined,
+                              color: AppColors.primary),
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -109,7 +110,8 @@ class ArchivedAccountsPage extends StatelessWidget {
                           ),
                           trailing: FilledButton.tonalIcon(
                             onPressed: () => _restore(context, account),
-                            icon: const Icon(Icons.unarchive_outlined, size: 18),
+                            icon:
+                                const Icon(Icons.unarchive_outlined, size: 18),
                             label: const Text('Restore'),
                           ),
                         ),

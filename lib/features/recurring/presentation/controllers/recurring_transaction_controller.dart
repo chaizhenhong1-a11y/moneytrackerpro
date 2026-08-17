@@ -8,7 +8,8 @@ import '../../domain/entities/recurring_transaction_rule.dart';
 import '../../domain/repositories/recurring_transaction_repository.dart';
 
 class RecurringTransactionController extends ChangeNotifier {
-  RecurringTransactionController(this._repository, this._transactionRepository, this._categoryController);
+  RecurringTransactionController(
+      this._repository, this._transactionRepository, this._categoryController);
 
   final RecurringTransactionRepository _repository;
   final TransactionRepository _transactionRepository;
@@ -88,14 +89,15 @@ class RecurringTransactionController extends ChangeNotifier {
     );
   }
 
-
   Future<bool> renameCategoryReferences({
     required String oldName,
     required String newName,
   }) {
     return _save(
       _rules
-          .map((rule) => rule.category == oldName ? rule.copyWith(category: newName) : rule)
+          .map((rule) => rule.category == oldName
+              ? rule.copyWith(category: newName)
+              : rule)
           .toList(),
     );
   }
@@ -103,7 +105,9 @@ class RecurringTransactionController extends ChangeNotifier {
   Future<bool> togglePaused(RecurringTransactionRule rule) {
     return _save(
       _rules
-          .map((item) => item.id == rule.id ? item.copyWith(isPaused: !item.isPaused) : item)
+          .map((item) => item.id == rule.id
+              ? item.copyWith(isPaused: !item.isPaused)
+              : item)
           .toList(),
     );
   }
@@ -116,7 +120,8 @@ class RecurringTransactionController extends ChangeNotifier {
     return _save(List.of(rules));
   }
 
-  Future<int> processDueTransactions({required Set<String> activeAccountIds}) async {
+  Future<int> processDueTransactions(
+      {required Set<String> activeAccountIds}) async {
     if (_rules.isEmpty) return 0;
 
     try {
@@ -137,7 +142,8 @@ class RecurringTransactionController extends ChangeNotifier {
         while (!due.isAfter(today) && safety < 120) {
           final id = _occurrenceId(rule.id, due);
           if (!existingIds.contains(id)) {
-            final category = _categoryController.resolve(rule.category, rule.type);
+            final category =
+                _categoryController.resolve(rule.category, rule.type);
             generated.add(
               TransactionEntry(
                 id: id,
@@ -160,10 +166,12 @@ class RecurringTransactionController extends ChangeNotifier {
       }
 
       if (generated.isNotEmpty) {
-        await _transactionRepository.replaceAll([...transactions, ...generated]);
+        await _transactionRepository
+            .replaceAll([...transactions, ...generated]);
       }
       await _repository.replaceAll(updatedRules);
-      _rules = List.unmodifiable(updatedRules..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate)));
+      _rules = List.unmodifiable(
+          updatedRules..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate)));
       _generatedCount = generated.length;
       _errorMessage = null;
       notifyListeners();
@@ -177,7 +185,8 @@ class RecurringTransactionController extends ChangeNotifier {
 
   Future<bool> _save(List<RecurringTransactionRule> next) async {
     final previous = _rules;
-    _rules = List.unmodifiable(next..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate)));
+    _rules = List.unmodifiable(
+        next..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate)));
     _errorMessage = null;
     notifyListeners();
     try {
@@ -208,7 +217,8 @@ class RecurringTransactionController extends ChangeNotifier {
     return DateTime(year, month, day);
   }
 
-  DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
+  DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
   String _occurrenceId(String ruleId, DateTime date) {
     final month = date.month.toString().padLeft(2, '0');

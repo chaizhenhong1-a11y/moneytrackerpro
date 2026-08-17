@@ -43,8 +43,10 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
     super.dispose();
   }
 
-  double? get _actualBalance => double.tryParse(_actualBalanceController.text.trim());
-  double get _difference => (_actualBalance ?? widget.bookBalance) - widget.bookBalance;
+  double? get _actualBalance =>
+      double.tryParse(_actualBalanceController.text.trim());
+  double get _difference =>
+      (_actualBalance ?? widget.bookBalance) - widget.bookBalance;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +56,8 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .92),
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .92),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -77,7 +80,8 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
                   ),
                 ),
                 const SizedBox(height: 22),
-                const Icon(Icons.fact_check_outlined, color: AppColors.primary, size: 34),
+                const Icon(Icons.fact_check_outlined,
+                    color: AppColors.primary, size: 34),
                 const SizedBox(height: 10),
                 const Text(
                   'Reconcile account',
@@ -88,7 +92,10 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
                 Text(
                   'Match ${widget.account.name} to the balance shown by your bank, wallet, or cash count.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.4),
+                  style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                      height: 1.4),
                 ),
                 const SizedBox(height: 22),
                 _BalanceComparison(
@@ -99,13 +106,17 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
                 const SizedBox(height: 18),
                 TextFormField(
                   controller: _actualBalanceController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                  decoration: _decoration('Actual balance', Icons.account_balance_wallet_outlined)
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true, signed: true),
+                  decoration: _decoration('Actual balance',
+                          Icons.account_balance_wallet_outlined)
                       .copyWith(prefixText: 'RM '),
                   onChanged: (_) => setState(() {}),
                   validator: (value) {
                     final amount = double.tryParse(value?.trim() ?? '');
-                    if (amount == null || !amount.isFinite) return 'Enter a valid account balance';
+                    if (amount == null || !amount.isFinite) {
+                      return 'Enter a valid account balance';
+                    }
                     return null;
                   },
                 ),
@@ -113,14 +124,16 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
                 TextFormField(
                   controller: _noteController,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: _decoration('Note (optional)', Icons.notes_rounded),
+                  decoration:
+                      _decoration('Note (optional)', Icons.notes_rounded),
                 ),
                 const SizedBox(height: 14),
                 InkWell(
                   onTap: _selectDate,
                   borderRadius: BorderRadius.circular(16),
                   child: InputDecorator(
-                    decoration: _decoration('Reconciliation date', Icons.calendar_today_rounded),
+                    decoration: _decoration(
+                        'Reconciliation date', Icons.calendar_today_rounded),
                     child: Text('${_date.day}/${_date.month}/${_date.year}'),
                   ),
                 ),
@@ -130,16 +143,21 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
                   icon: _isSaving
                       ? const SizedBox.square(
                           dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
                       : const Icon(Icons.done_all_rounded),
-                  label: Text(isMatched ? 'Already reconciled' : 'Create adjustment'),
+                  label: Text(
+                      isMatched ? 'Already reconciled' : 'Create adjustment'),
                 ),
                 const SizedBox(height: 10),
                 const Text(
                   'The adjustment changes the real account balance, but is excluded from income, expenses, budgets, and statistics.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 11, height: 1.4),
+                  style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                      height: 1.4),
                 ),
               ],
             ),
@@ -155,7 +173,8 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
       prefixIcon: Icon(icon, color: AppColors.primary),
       filled: true,
       fillColor: AppColors.background,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
@@ -194,7 +213,9 @@ class _ReconcileAccountSheetState extends State<ReconcileAccountSheet> {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(widget.controller.errorMessage ?? 'Unable to reconcile this account.')),
+      SnackBar(
+          content: Text(widget.controller.errorMessage ??
+              'Unable to reconcile this account.')),
     );
   }
 }
@@ -228,7 +249,9 @@ class _BalanceComparison extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: _BalanceValue(label: 'Book balance', amount: bookBalance)),
+              Expanded(
+                  child: _BalanceValue(
+                      label: 'Book balance', amount: bookBalance)),
               const SizedBox(width: 12),
               Expanded(
                 child: _BalanceValue(
@@ -250,7 +273,8 @@ class _BalanceComparison extends StatelessWidget {
               children: [
                 Icon(Icons.tune_rounded, size: 18, color: color),
                 const SizedBox(width: 8),
-                const Text('Difference', style: TextStyle(fontWeight: FontWeight.w700)),
+                const Text('Difference',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
                 const Spacer(),
                 Text(
                   '${difference >= 0 ? '+' : '-'}${CurrencyFormatter.myr(difference.abs())}',
@@ -266,7 +290,8 @@ class _BalanceComparison extends StatelessWidget {
 }
 
 class _BalanceValue extends StatelessWidget {
-  const _BalanceValue({required this.label, required this.amount, this.alignEnd = false});
+  const _BalanceValue(
+      {required this.label, required this.amount, this.alignEnd = false});
 
   final String label;
   final double amount;
@@ -275,9 +300,12 @@ class _BalanceValue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+        Text(label,
+            style:
+                const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
         const SizedBox(height: 4),
         Text(
           CurrencyFormatter.myr(amount),

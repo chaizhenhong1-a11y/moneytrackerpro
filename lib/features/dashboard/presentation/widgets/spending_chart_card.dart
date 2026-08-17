@@ -28,11 +28,13 @@ class SpendingChartCard extends StatelessWidget {
                 children: [
                   Text(
                     CurrencyFormatter.myr(overview.currentTotal),
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(width: 9),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: positiveChange
                           ? AppColors.success.withValues(alpha: .1)
@@ -42,7 +44,9 @@ class SpendingChartCard extends StatelessWidget {
                     child: Text(
                       overview.changeLabel,
                       style: TextStyle(
-                        color: positiveChange ? AppColors.success : AppColors.expense,
+                        color: positiveChange
+                            ? AppColors.success
+                            : AppColors.expense,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                       ),
@@ -87,7 +91,8 @@ class _WeeklyOverview {
     final days = List.generate(7, (index) {
       final date = currentStart.add(Duration(days: index));
       final amount = transactions.where((item) {
-        final itemDate = DateTime(item.date.year, item.date.month, item.date.day);
+        final itemDate =
+            DateTime(item.date.year, item.date.month, item.date.day);
         return item.countsAsExpense && itemDate == date;
       }).fold<double>(0, (sum, item) => sum + item.amount);
       return _ChartDay(date: date, amount: amount);
@@ -96,7 +101,9 @@ class _WeeklyOverview {
     final currentTotal = days.fold<double>(0, (sum, item) => sum + item.amount);
     final previousTotal = transactions.where((item) {
       final itemDate = DateTime(item.date.year, item.date.month, item.date.day);
-      return item.countsAsExpense && !itemDate.isBefore(previousStart) && !itemDate.isAfter(previousEnd);
+      return item.countsAsExpense &&
+          !itemDate.isBefore(previousStart) &&
+          !itemDate.isAfter(previousEnd);
     }).fold<double>(0, (sum, item) => sum + item.amount);
 
     return _WeeklyOverview(
@@ -139,7 +146,8 @@ class _SpendingChartPainter extends CustomPainter {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), grid);
     }
 
-    final maxAmount = days.fold<double>(0, (maximum, day) => math.max(maximum, day.amount));
+    final maxAmount =
+        days.fold<double>(0, (maximum, day) => math.max(maximum, day.amount));
     final points = List.generate(days.length, (index) {
       final x = size.width * index / (days.length - 1);
       final ratio = maxAmount == 0 ? .5 : days[index].amount / maxAmount;
@@ -194,7 +202,8 @@ class _SpendingChartPainter extends CustomPainter {
       final rawX = size.width * i / (days.length - 1) - label.width / 2;
       label.paint(
         canvas,
-        Offset(math.max(0, math.min(rawX, size.width - label.width)), size.height - 13),
+        Offset(math.max(0, math.min(rawX, size.width - label.width)),
+            size.height - 13),
       );
     }
   }
@@ -207,7 +216,8 @@ class _SpendingChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _SpendingChartPainter oldDelegate) {
     if (oldDelegate.days.length != days.length) return true;
     for (var i = 0; i < days.length; i++) {
-      if (oldDelegate.days[i].amount != days[i].amount || oldDelegate.days[i].date != days[i].date) {
+      if (oldDelegate.days[i].amount != days[i].amount ||
+          oldDelegate.days[i].date != days[i].date) {
         return true;
       }
     }

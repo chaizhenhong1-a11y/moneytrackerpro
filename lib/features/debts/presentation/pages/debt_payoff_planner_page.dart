@@ -24,9 +24,12 @@ class _DebtPayoffPlannerPageState extends State<DebtPayoffPlannerPage> {
   @override
   void initState() {
     super.initState();
-    final outstanding = _activeDebts.fold<double>(0, (sum, debt) => sum + debt.currentBalance);
-    final suggestion = outstanding <= 0 ? 500.0 : math.max(100.0, outstanding / 24);
-    _monthlyBudgetController = TextEditingController(text: suggestion.toStringAsFixed(0));
+    final outstanding =
+        _activeDebts.fold<double>(0, (sum, debt) => sum + debt.currentBalance);
+    final suggestion =
+        outstanding <= 0 ? 500.0 : math.max(100.0, outstanding / 24);
+    _monthlyBudgetController =
+        TextEditingController(text: suggestion.toStringAsFixed(0));
   }
 
   @override
@@ -35,11 +38,13 @@ class _DebtPayoffPlannerPageState extends State<DebtPayoffPlannerPage> {
     super.dispose();
   }
 
-  List<Debt> get _activeDebts => widget.debts.where((debt) => !debt.isPaidOff).toList();
+  List<Debt> get _activeDebts =>
+      widget.debts.where((debt) => !debt.isPaidOff).toList();
 
   @override
   Widget build(BuildContext context) {
-    final monthlyBudget = double.tryParse(_monthlyBudgetController.text.trim()) ?? 0;
+    final monthlyBudget =
+        double.tryParse(_monthlyBudgetController.text.trim()) ?? 0;
     final projection = _buildProjection(_activeDebts, monthlyBudget, _strategy);
 
     return Scaffold(
@@ -60,7 +65,8 @@ class _DebtPayoffPlannerPageState extends State<DebtPayoffPlannerPage> {
             decoration: const InputDecoration(
               labelText: 'Monthly payoff budget',
               prefixText: 'RM ',
-              helperText: 'Amount you plan to put toward tracked debts each month.',
+              helperText:
+                  'Amount you plan to put toward tracked debts each month.',
               border: OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() {}),
@@ -73,11 +79,13 @@ class _DebtPayoffPlannerPageState extends State<DebtPayoffPlannerPage> {
           else ...[
             _ProjectionSummary(projection: projection),
             const SizedBox(height: 20),
-            const Text('Payoff order', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+            const Text('Payoff order',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
             const SizedBox(height: 10),
             ...projection.items.asMap().entries.map(
-              (entry) => _PayoffItemCard(index: entry.key + 1, item: entry.value),
-            ),
+                  (entry) =>
+                      _PayoffItemCard(index: entry.key + 1, item: entry.value),
+                ),
             const SizedBox(height: 10),
             const _ProjectionNote(),
           ],
@@ -111,11 +119,14 @@ class _IntroCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Build a payoff path', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                  const Text('Build a payoff path',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 5),
                   Text(
                     '$activeDebtCount active ${activeDebtCount == 1 ? 'debt' : 'debts'} available for planning. Compare a balance-first Snowball plan with an interest-first Avalanche plan.',
-                    style: const TextStyle(color: AppColors.textSecondary, height: 1.4),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, height: 1.4),
                   ),
                 ],
               ),
@@ -170,24 +181,36 @@ class _ProjectionSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Projection', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+          const Text('Projection',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _Metric(label: 'Outstanding', value: CurrencyFormatter.myr(projection.startingBalance))),
+              Expanded(
+                  child: _Metric(
+                      label: 'Outstanding',
+                      value:
+                          CurrencyFormatter.myr(projection.startingBalance))),
               const SizedBox(width: 10),
-              Expanded(child: _Metric(label: 'Estimated payoff', value: monthsText)),
+              Expanded(
+                  child: _Metric(label: 'Estimated payoff', value: monthsText)),
             ],
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              Expanded(child: _Metric(label: 'Projected interest', value: CurrencyFormatter.myr(projection.projectedInterest))),
+              Expanded(
+                  child: _Metric(
+                      label: 'Projected interest',
+                      value:
+                          CurrencyFormatter.myr(projection.projectedInterest))),
               const SizedBox(width: 10),
               Expanded(
                 child: _Metric(
                   label: 'Strategy',
-                  value: projection.strategy == DebtPayoffStrategy.avalanche ? 'Avalanche' : 'Snowball',
+                  value: projection.strategy == DebtPayoffStrategy.avalanche
+                      ? 'Avalanche'
+                      : 'Snowball',
                 ),
               ),
             ],
@@ -196,7 +219,8 @@ class _ProjectionSummary extends StatelessWidget {
             const SizedBox(height: 12),
             const Text(
               'The selected monthly budget is too low to overcome projected interest. Increase the monthly payoff budget.',
-              style: TextStyle(color: AppColors.expense, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: AppColors.expense, fontWeight: FontWeight.w700),
             ),
           ],
         ],
@@ -214,11 +238,17 @@ class _Metric extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(18)),
+        decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(18)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w700)),
+            Text(label,
+                style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700)),
             const SizedBox(height: 5),
             Text(value, style: const TextStyle(fontWeight: FontWeight.w900)),
           ],
@@ -242,18 +272,21 @@ class _PayoffItemCard extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: AppColors.primarySoft,
                 foregroundColor: AppColors.primary,
-                child: Text('$index', style: const TextStyle(fontWeight: FontWeight.w900)),
+                child: Text('$index',
+                    style: const TextStyle(fontWeight: FontWeight.w900)),
               ),
               const SizedBox(width: 13),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.debt.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                    Text(item.debt.name,
+                        style: const TextStyle(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 3),
                     Text(
                       '${item.debt.interestRate.toStringAsFixed(2)}% APR · ${CurrencyFormatter.myr(item.debt.currentBalance)}',
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 12),
                     ),
                   ],
                 ),
@@ -261,9 +294,15 @@ class _PayoffItemCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(item.payoffMonth == null ? '—' : 'Month ${item.payoffMonth}', style: const TextStyle(fontWeight: FontWeight.w900)),
+                  Text(
+                      item.payoffMonth == null
+                          ? '—'
+                          : 'Month ${item.payoffMonth}',
+                      style: const TextStyle(fontWeight: FontWeight.w900)),
                   const SizedBox(height: 3),
-                  const Text('target payoff', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                  const Text('target payoff',
+                      style: TextStyle(
+                          color: AppColors.textSecondary, fontSize: 10)),
                 ],
               ),
             ],
@@ -286,12 +325,14 @@ class _ProjectionNote extends StatelessWidget {
         child: const Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.info_outline_rounded, size: 19, color: AppColors.textSecondary),
+            Icon(Icons.info_outline_rounded,
+                size: 19, color: AppColors.textSecondary),
             SizedBox(width: 10),
             Expanded(
               child: Text(
                 'Planning estimate only. This simplified model compounds each debt monthly at its recorded APR and applies the entered budget in strategy order. It does not model lender minimum payments, fees, promotional rates, or changing APRs.',
-                style: TextStyle(color: AppColors.textSecondary, height: 1.4, fontSize: 12),
+                style: TextStyle(
+                    color: AppColors.textSecondary, height: 1.4, fontSize: 12),
               ),
             ),
           ],
@@ -307,11 +348,15 @@ class _EmptyPlannerState extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 48),
         child: Column(
           children: [
-            Icon(Icons.celebration_outlined, size: 50, color: AppColors.success),
+            Icon(Icons.celebration_outlined,
+                size: 50, color: AppColors.success),
             SizedBox(height: 12),
-            Text('No active debt to plan.', style: TextStyle(fontWeight: FontWeight.w800)),
+            Text('No active debt to plan.',
+                style: TextStyle(fontWeight: FontWeight.w800)),
             SizedBox(height: 5),
-            Text('Add a liability or keep enjoying the zero-balance view.', style: TextStyle(color: AppColors.textSecondary), textAlign: TextAlign.center),
+            Text('Add a liability or keep enjoying the zero-balance view.',
+                style: TextStyle(color: AppColors.textSecondary),
+                textAlign: TextAlign.center),
           ],
         ),
       );
@@ -323,8 +368,11 @@ class _InvalidBudgetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(18)),
-        child: const Text('Enter a monthly payoff budget greater than RM 0 to build the projection.'),
+        decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(18)),
+        child: const Text(
+            'Enter a monthly payoff budget greater than RM 0 to build the projection.'),
       );
 }
 
@@ -361,25 +409,35 @@ DebtPayoffProjection _buildProjection(
   final ordered = [...source]..sort((a, b) {
       if (strategy == DebtPayoffStrategy.snowball) {
         final balanceCompare = a.currentBalance.compareTo(b.currentBalance);
-        return balanceCompare != 0 ? balanceCompare : b.interestRate.compareTo(a.interestRate);
+        return balanceCompare != 0
+            ? balanceCompare
+            : b.interestRate.compareTo(a.interestRate);
       }
       final rateCompare = b.interestRate.compareTo(a.interestRate);
-      return rateCompare != 0 ? rateCompare : a.currentBalance.compareTo(b.currentBalance);
+      return rateCompare != 0
+          ? rateCompare
+          : a.currentBalance.compareTo(b.currentBalance);
     });
 
-  final startingBalance = ordered.fold<double>(0, (sum, debt) => sum + debt.currentBalance);
+  final startingBalance =
+      ordered.fold<double>(0, (sum, debt) => sum + debt.currentBalance);
   if (ordered.isEmpty || monthlyBudget <= 0) {
     return DebtPayoffProjection(
       strategy: strategy,
       startingBalance: startingBalance,
       projectedInterest: 0,
       monthsToPayoff: 0,
-      items: [for (final debt in ordered) DebtPayoffItem(debt: debt, payoffMonth: null)],
+      items: [
+        for (final debt in ordered)
+          DebtPayoffItem(debt: debt, payoffMonth: null)
+      ],
       isPayoffPossible: ordered.isEmpty,
     );
   }
 
-  final balances = <String, double>{for (final debt in ordered) debt.id: debt.currentBalance};
+  final balances = <String, double>{
+    for (final debt in ordered) debt.id: debt.currentBalance
+  };
   final payoffMonths = <String, int>{};
   var projectedInterest = 0.0;
   var month = 0;
@@ -410,7 +468,8 @@ DebtPayoffProjection _buildProjection(
       if (remaining <= 0.005) payoffMonths[debt.id] = month;
     }
 
-    final currentTotal = balances.values.fold<double>(0, (sum, value) => sum + value);
+    final currentTotal =
+        balances.values.fold<double>(0, (sum, value) => sum + value);
     if (currentTotal >= previousTotal - 0.005) {
       stagnantMonths++;
     } else {

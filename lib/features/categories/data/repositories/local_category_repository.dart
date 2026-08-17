@@ -30,14 +30,17 @@ class LocalCategoryRepository implements CategoryRepository {
         return TransactionCategory(
           id: json['id'] as String,
           name: json['name'] as String,
-          icon: IconData(json['iconCodePoint'] as int, fontFamily: 'MaterialIcons'),
+          icon: IconData(json['iconCodePoint'] as int,
+              fontFamily: 'MaterialIcons'),
           color: Color(json['colorValue'] as int),
           type: TransactionType.values.byName(json['type'] as String),
           isArchived: json['isArchived'] as bool? ?? false,
           isSystem: json['isSystem'] as bool? ?? false,
         );
       }).toList();
-      return categories.isEmpty ? TransactionCategories.defaults() : List.unmodifiable(categories);
+      return categories.isEmpty
+          ? TransactionCategories.defaults()
+          : List.unmodifiable(categories);
     } catch (_) {
       throw const CategoryStorageException('Stored category data is invalid.');
     }

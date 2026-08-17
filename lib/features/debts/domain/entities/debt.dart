@@ -19,8 +19,11 @@ class Debt {
   final double interestRate;
   final DateTime dueDate;
 
-  double get paidAmount => (originalAmount - currentBalance).clamp(0.0, originalAmount).toDouble();
-  double get progress => originalAmount <= 0 ? 0 : (paidAmount / originalAmount).clamp(0.0, 1.0).toDouble();
+  double get paidAmount =>
+      (originalAmount - currentBalance).clamp(0.0, originalAmount).toDouble();
+  double get progress => originalAmount <= 0
+      ? 0
+      : (paidAmount / originalAmount).clamp(0.0, 1.0).toDouble();
   bool get isPaidOff => currentBalance <= 0.005;
 
   Debt copyWith({

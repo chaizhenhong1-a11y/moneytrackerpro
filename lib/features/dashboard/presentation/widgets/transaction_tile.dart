@@ -20,44 +20,46 @@ class TransactionTile extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: transaction.color.withValues(alpha: .12),
-                borderRadius: BorderRadius.circular(15),
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: transaction.color.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Icon(transaction.icon, color: transaction.color),
               ),
-              child: Icon(transaction.icon, color: transaction.color),
-            ),
-            const SizedBox(width: 13),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(transaction.title, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 5),
-                  Text(
-                    '${transaction.category} • ${_relativeDate(transaction.date)}',
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
-                  ),
-                ],
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(transaction.title,
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 5),
+                    Text(
+                      '${transaction.category} • ${_relativeDate(transaction.date)}',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 11),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              CurrencyFormatter.myr(transaction.signedAmount, showSign: true),
-              style: TextStyle(
-                color: transaction.isTransfer
-                    ? AppColors.primary
-                    : transaction.isIncome
-                        ? AppColors.success
-                        : AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
+              const SizedBox(width: 8),
+              Text(
+                CurrencyFormatter.myr(transaction.signedAmount, showSign: true),
+                style: TextStyle(
+                  color: transaction.isTransfer
+                      ? AppColors.primary
+                      : transaction.isIncome
+                          ? AppColors.success
+                          : AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-          ],
+            ],
           ),
         ),
       ),

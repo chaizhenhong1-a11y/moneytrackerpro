@@ -32,7 +32,8 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> addAccount({required String name, required FinanceAccountType type}) async {
+  Future<bool> addAccount(
+      {required String name, required FinanceAccountType type}) async {
     final next = FinanceAccount(
       id: 'account_${DateTime.now().microsecondsSinceEpoch}',
       name: name.trim(),
@@ -41,7 +42,6 @@ class AccountController extends ChangeNotifier {
     return _save([..._accounts, next]);
   }
 
-
   Future<bool> archiveAccount(String id) async {
     if (id == FinanceAccountIds.cash) {
       _errorMessage = 'The default Cash account cannot be archived.';
@@ -49,21 +49,25 @@ class AccountController extends ChangeNotifier {
       return false;
     }
     final next = _accounts
-        .map((account) => account.id == id ? account.copyWith(isArchived: true) : account)
+        .map((account) =>
+            account.id == id ? account.copyWith(isArchived: true) : account)
         .toList();
     return _save(next);
   }
 
   Future<bool> restoreAccount(String id) async {
     final next = _accounts
-        .map((account) => account.id == id ? account.copyWith(isArchived: false) : account)
+        .map((account) =>
+            account.id == id ? account.copyWith(isArchived: false) : account)
         .toList();
     return _save(next);
   }
 
   Future<bool> deleteAccount(String id, {required bool isUsed}) async {
     if (id == FinanceAccountIds.cash || isUsed) {
-      _errorMessage = isUsed ? 'Move or delete this account’s transactions first.' : 'The default Cash account cannot be deleted.';
+      _errorMessage = isUsed
+          ? 'Move or delete this account’s transactions first.'
+          : 'The default Cash account cannot be deleted.';
       notifyListeners();
       return false;
     }

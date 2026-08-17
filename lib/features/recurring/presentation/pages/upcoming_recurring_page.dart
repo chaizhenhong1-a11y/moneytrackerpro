@@ -24,29 +24,32 @@ class UpcomingRecurringPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([controller, accountController, categoryController]),
+      listenable:
+          Listenable.merge([controller, accountController, categoryController]),
       builder: (context, _) {
         final today = _dateOnly(DateTime.now());
-        final activeIds = accountController.activeAccounts.map((account) => account.id).toSet();
-        final visible = controller.rules.where((rule) => !rule.isPaused).toList()
+        final activeIds = accountController.activeAccounts
+            .map((account) => account.id)
+            .toSet();
+        final visible = controller.rules
+            .where((rule) => !rule.isPaused)
+            .toList()
           ..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
         final attention = visible
-            .where((rule) => !activeIds.contains(rule.accountId) || _dateOnly(rule.nextDueDate).isBefore(today))
+            .where((rule) =>
+                !activeIds.contains(rule.accountId) ||
+                _dateOnly(rule.nextDueDate).isBefore(today))
             .toList();
-        final upcoming = visible
-            .where((rule) {
-              if (!activeIds.contains(rule.accountId)) return false;
-              final due = _dateOnly(rule.nextDueDate);
-              final days = due.difference(today).inDays;
-              return days >= 0 && days <= 7;
-            })
-            .toList();
-        final later = visible
-            .where((rule) {
-              if (!activeIds.contains(rule.accountId)) return false;
-              return _dateOnly(rule.nextDueDate).difference(today).inDays > 7;
-            })
-            .toList();
+        final upcoming = visible.where((rule) {
+          if (!activeIds.contains(rule.accountId)) return false;
+          final due = _dateOnly(rule.nextDueDate);
+          final days = due.difference(today).inDays;
+          return days >= 0 && days <= 7;
+        }).toList();
+        final later = visible.where((rule) {
+          if (!activeIds.contains(rule.accountId)) return false;
+          return _dateOnly(rule.nextDueDate).difference(today).inDays > 7;
+        }).toList();
         final next30 = visible.where((rule) {
           if (!activeIds.contains(rule.accountId)) return false;
           final days = _dateOnly(rule.nextDueDate).difference(today).inDays;
@@ -61,7 +64,8 @@ class UpcomingRecurringPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Upcoming recurring', style: TextStyle(fontWeight: FontWeight.w800)),
+            title: const Text('Upcoming recurring',
+                style: TextStyle(fontWeight: FontWeight.w800)),
             actions: [
               IconButton(
                 tooltip: 'Manage recurring rules',
@@ -83,7 +87,9 @@ class UpcomingRecurringPage extends StatelessWidget {
                     ),
                     if (attention.isNotEmpty) ...[
                       const SizedBox(height: 24),
-                      const _SectionTitle(title: 'Needs attention', icon: Icons.error_outline_rounded),
+                      const _SectionTitle(
+                          title: 'Needs attention',
+                          icon: Icons.error_outline_rounded),
                       const SizedBox(height: 10),
                       ...attention.map(
                         (rule) => _RecurringReminderTile(
@@ -95,7 +101,8 @@ class UpcomingRecurringPage extends StatelessWidget {
                     ],
                     if (upcoming.isNotEmpty) ...[
                       const SizedBox(height: 24),
-                      const _SectionTitle(title: 'Next 7 days', icon: Icons.upcoming_outlined),
+                      const _SectionTitle(
+                          title: 'Next 7 days', icon: Icons.upcoming_outlined),
                       const SizedBox(height: 10),
                       ...upcoming.map(
                         (rule) => _RecurringReminderTile(
@@ -107,7 +114,8 @@ class UpcomingRecurringPage extends StatelessWidget {
                     ],
                     if (later.isNotEmpty) ...[
                       const SizedBox(height: 24),
-                      const _SectionTitle(title: 'Later', icon: Icons.event_outlined),
+                      const _SectionTitle(
+                          title: 'Later', icon: Icons.event_outlined),
                       const SizedBox(height: 10),
                       ...later.map(
                         (rule) => _RecurringReminderTile(
@@ -143,7 +151,8 @@ class UpcomingRecurringPage extends StatelessWidget {
     );
   }
 
-  DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
+  DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 }
 
 class _ForecastCard extends StatelessWidget {
@@ -174,16 +183,23 @@ class _ForecastCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 '$upcomingCount due in the next 7 days',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
             ],
           ),
           const SizedBox(height: 18),
           Row(
             children: [
-              Expanded(child: _ForecastValue(label: '30-day income', value: income, isIncome: true)),
+              Expanded(
+                  child: _ForecastValue(
+                      label: '30-day income', value: income, isIncome: true)),
               const SizedBox(width: 12),
-              Expanded(child: _ForecastValue(label: '30-day expenses', value: expense, isIncome: false)),
+              Expanded(
+                  child: _ForecastValue(
+                      label: '30-day expenses',
+                      value: expense,
+                      isIncome: false)),
             ],
           ),
         ],
@@ -193,7 +209,8 @@ class _ForecastCard extends StatelessWidget {
 }
 
 class _ForecastValue extends StatelessWidget {
-  const _ForecastValue({required this.label, required this.value, required this.isIncome});
+  const _ForecastValue(
+      {required this.label, required this.value, required this.isIncome});
 
   final String label;
   final double value;
@@ -203,11 +220,16 @@ class _ForecastValue extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(18)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w600)),
+          Text(label,
+              style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           Text(
             '${isIncome ? '+' : '-'}${CurrencyFormatter.myr(value)}',
@@ -235,7 +257,8 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Icon(icon, size: 20, color: AppColors.primary),
         const SizedBox(width: 8),
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+        Text(title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
       ],
     );
   }
@@ -262,10 +285,15 @@ class _RecurringReminderTile extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: accountAvailable ? AppColors.primarySoft : AppColors.border,
+              backgroundColor:
+                  accountAvailable ? AppColors.primarySoft : AppColors.border,
               child: Icon(
-                accountAvailable ? Icons.repeat_rounded : Icons.archive_outlined,
-                color: accountAvailable ? AppColors.primary : AppColors.textSecondary,
+                accountAvailable
+                    ? Icons.repeat_rounded
+                    : Icons.archive_outlined,
+                color: accountAvailable
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
               ),
             ),
             const SizedBox(width: 14),
@@ -273,16 +301,23 @@ class _RecurringReminderTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(rule.title, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text(rule.title,
+                      style: const TextStyle(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 4),
                   Text(
-                    accountAvailable ? '$accountName • ${_dueLabel(rule.nextDueDate)}' : '$accountName • Account unavailable',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+                    accountAvailable
+                        ? '$accountName • ${_dueLabel(rule.nextDueDate)}'
+                        : '$accountName • Account unavailable',
+                    style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 3),
                   Text(
                     '${rule.nextDueDate.day}/${rule.nextDueDate.month}/${rule.nextDueDate.year}',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 11),
                   ),
                 ],
               ),
@@ -325,9 +360,11 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.notifications_active_outlined, size: 58, color: AppColors.primary),
+            const Icon(Icons.notifications_active_outlined,
+                size: 58, color: AppColors.primary),
             const SizedBox(height: 18),
-            const Text('Nothing scheduled yet', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+            const Text('Nothing scheduled yet',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
             const Text(
               'Create recurring income or expenses to see upcoming money reminders here.',

@@ -88,5 +88,6 @@ abstract final class CashFlowForecastService {
     return DateTime(year, month, day);
   }
 
-  static DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
+  static DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 }

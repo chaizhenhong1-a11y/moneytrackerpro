@@ -28,7 +28,8 @@ class DashboardController extends ChangeNotifier {
       .where((item) => item.countsAsExpense)
       .fold(0, (total, item) => total + item.amount);
 
-  double get balance => _transactions.fold(0, (total, item) => total + item.signedAmount);
+  double get balance =>
+      _transactions.fold(0, (total, item) => total + item.signedAmount);
 
   Future<void> load() async {
     _status = DashboardStatus.loading;
@@ -45,13 +46,16 @@ class DashboardController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<bool> renameCategoryReferences({
     required String oldName,
     required TransactionCategory category,
   }) async {
     final next = _transactions.map((item) {
-      if (item.category != oldName || item.isTransfer || item.isReconciliation) return item;
+      if (item.category != oldName ||
+          item.isTransfer ||
+          item.isReconciliation) {
+        return item;
+      }
       return TransactionEntry(
         id: item.id,
         title: item.title,
@@ -232,14 +236,17 @@ class DashboardController extends ChangeNotifier {
     final hasIncome = pair.any((item) => item.type == TransactionType.income);
     final hasExpense = pair.any((item) => item.type == TransactionType.expense);
     if (pair.length != 2 || !hasIncome || !hasExpense) {
-      _errorMessage = 'This transfer pair is incomplete, so it was not changed.';
+      _errorMessage =
+          'This transfer pair is incomplete, so it was not changed.';
       notifyListeners();
       return false;
     }
 
     final detail = note.trim();
-    final outgoing = pair.firstWhere((item) => item.type == TransactionType.expense);
-    final incoming = pair.firstWhere((item) => item.type == TransactionType.income);
+    final outgoing =
+        pair.firstWhere((item) => item.type == TransactionType.expense);
+    final incoming =
+        pair.firstWhere((item) => item.type == TransactionType.income);
     final updatedOut = TransactionEntry(
       id: outgoing.id,
       title: detail.isEmpty ? 'Transfer to $toAccountName' : detail,
@@ -289,7 +296,8 @@ class DashboardController extends ChangeNotifier {
         .toList(growable: false);
   }
 
-  Future<List<TransactionEntry>?> cancelTransfer(TransactionEntry transaction) async {
+  Future<List<TransactionEntry>?> cancelTransfer(
+      TransactionEntry transaction) async {
     final groupId = transaction.transferGroupId;
     if (groupId == null) {
       _errorMessage = 'This transfer cannot be matched to its linked entry.';
@@ -301,7 +309,8 @@ class DashboardController extends ChangeNotifier {
     final hasIncome = pair.any((item) => item.type == TransactionType.income);
     final hasExpense = pair.any((item) => item.type == TransactionType.expense);
     if (pair.length != 2 || !hasIncome || !hasExpense) {
-      _errorMessage = 'This transfer pair is incomplete, so it was not changed.';
+      _errorMessage =
+          'This transfer pair is incomplete, so it was not changed.';
       notifyListeners();
       return null;
     }
@@ -379,7 +388,8 @@ class DashboardController extends ChangeNotifier {
 
   Future<void> deleteTransaction(String id) async {
     final previous = _transactions;
-    _transactions = _transactions.where((item) => item.id != id).toList(growable: false);
+    _transactions =
+        _transactions.where((item) => item.id != id).toList(growable: false);
     notifyListeners();
     try {
       await _repository.delete(id);
@@ -406,7 +416,8 @@ class DashboardController extends ChangeNotifier {
     }
   }
 
-  Future<bool> replaceAllTransactions(List<TransactionEntry> transactions) async {
+  Future<bool> replaceAllTransactions(
+      List<TransactionEntry> transactions) async {
     try {
       await _repository.replaceAll(transactions);
       _transactions = await _repository.getAll();

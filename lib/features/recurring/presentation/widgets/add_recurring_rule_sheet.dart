@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_selector_style.dart';
+import '../../../../core/widgets/app_form_style.dart';
 import '../../../accounts/domain/entities/finance_account.dart';
 import '../../../transactions/domain/entities/transaction_category.dart';
 import '../../../transactions/domain/entities/transaction_entry.dart';
@@ -72,7 +74,8 @@ class _AddRecurringRuleSheetState extends State<AddRecurringRuleSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .92),
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .92),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -88,20 +91,28 @@ class _AddRecurringRuleSheetState extends State<AddRecurringRuleSheet> {
                   child: Container(
                     width: 45,
                     height: 5,
-                    decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
                 const SizedBox(height: 22),
                 Text(
-                  widget.initialRule == null ? 'New recurring transaction' : 'Edit recurring transaction',
+                  widget.initialRule == null
+                      ? 'New recurring transaction'
+                      : 'Edit recurring transaction',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
+                  style: const TextStyle(
+                      fontSize: 21, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 22),
                 SegmentedButton<TransactionType>(
+                  style: AppSelectorStyle.segmentedButtonStyle(),
                   segments: const [
-                    ButtonSegment(value: TransactionType.expense, label: Text('Expense')),
-                    ButtonSegment(value: TransactionType.income, label: Text('Income')),
+                    ButtonSegment(
+                        value: TransactionType.expense, label: Text('Expense')),
+                    ButtonSegment(
+                        value: TransactionType.income, label: Text('Income')),
                   ],
                   selected: {_type},
                   onSelectionChanged: (selection) => setState(() {
@@ -113,16 +124,22 @@ class _AddRecurringRuleSheetState extends State<AddRecurringRuleSheet> {
                 TextFormField(
                   controller: _titleController,
                   decoration: _decoration('Name', Icons.edit_rounded),
-                  validator: (value) => value == null || value.trim().isEmpty ? 'Enter a name' : null,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Enter a name'
+                      : null,
                 ),
                 const SizedBox(height: 14),
                 TextFormField(
                   controller: _amountController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: _decoration('Amount', Icons.payments_outlined).copyWith(prefixText: 'RM '),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: _decoration('Amount', Icons.payments_outlined)
+                      .copyWith(prefixText: 'RM '),
                   validator: (value) {
                     final amount = double.tryParse(value?.trim() ?? '');
-                    return amount == null || amount <= 0 ? 'Enter a valid amount' : null;
+                    return amount == null || amount <= 0
+                        ? 'Enter a valid amount'
+                        : null;
                   },
                 ),
                 const SizedBox(height: 14),
@@ -130,29 +147,41 @@ class _AddRecurringRuleSheetState extends State<AddRecurringRuleSheet> {
                   initialValue: _category,
                   decoration: _decoration('Category', Icons.category_outlined),
                   items: _categoryOptions()
-                      .map((category) => DropdownMenuItem(value: category, child: Text(category.name)))
+                      .map((category) => DropdownMenuItem(
+                          value: category, child: Text(category.name)))
                       .toList(),
-                  onChanged: (value) => setState(() => _category = value ?? _category),
+                  onChanged: (value) =>
+                      setState(() => _category = value ?? _category),
                 ),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
                   initialValue: _accountId,
-                  decoration: _decoration('Account', Icons.account_balance_wallet_outlined),
+                  decoration: _decoration(
+                      'Account', Icons.account_balance_wallet_outlined),
                   items: widget.accounts
-                      .map((account) => DropdownMenuItem(value: account.id, child: Text(account.name)))
+                      .map((account) => DropdownMenuItem(
+                          value: account.id, child: Text(account.name)))
                       .toList(),
-                  onChanged: (value) => setState(() => _accountId = value ?? _accountId),
+                  onChanged: (value) =>
+                      setState(() => _accountId = value ?? _accountId),
                 ),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<RecurringFrequency>(
                   initialValue: _frequency,
                   decoration: _decoration('Repeat', Icons.repeat_rounded),
                   items: const [
-                    DropdownMenuItem(value: RecurringFrequency.weekly, child: Text('Weekly')),
-                    DropdownMenuItem(value: RecurringFrequency.monthly, child: Text('Monthly')),
-                    DropdownMenuItem(value: RecurringFrequency.yearly, child: Text('Yearly')),
+                    DropdownMenuItem(
+                        value: RecurringFrequency.weekly,
+                        child: Text('Weekly')),
+                    DropdownMenuItem(
+                        value: RecurringFrequency.monthly,
+                        child: Text('Monthly')),
+                    DropdownMenuItem(
+                        value: RecurringFrequency.yearly,
+                        child: Text('Yearly')),
                   ],
-                  onChanged: (value) => setState(() => _frequency = value ?? _frequency),
+                  onChanged: (value) =>
+                      setState(() => _frequency = value ?? _frequency),
                 ),
                 const SizedBox(height: 14),
                 InkWell(
@@ -160,19 +189,27 @@ class _AddRecurringRuleSheetState extends State<AddRecurringRuleSheet> {
                   borderRadius: BorderRadius.circular(16),
                   child: InputDecorator(
                     decoration: _decoration(
-                      widget.initialRule == null ? 'First due date' : 'Next due date',
+                      widget.initialRule == null
+                          ? 'First due date'
+                          : 'Next due date',
                       Icons.event_repeat_rounded,
                     ),
-                    child: Text('${_firstDueDate.day}/${_firstDueDate.month}/${_firstDueDate.year}'),
+                    child: Text(
+                        '${_firstDueDate.day}/${_firstDueDate.month}/${_firstDueDate.year}'),
                   ),
                 ),
                 const SizedBox(height: 22),
                 FilledButton(
                   onPressed: _isSaving ? null : _save,
                   child: _isSaving
-                      ? const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox.square(
+                          dimension: 22,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
                       : Text(
-                          widget.initialRule == null ? 'Create recurring rule' : 'Save changes',
+                          widget.initialRule == null
+                              ? 'Create recurring rule'
+                              : 'Save changes',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                 ),
@@ -184,12 +221,12 @@ class _AddRecurringRuleSheetState extends State<AddRecurringRuleSheet> {
     );
   }
 
-
   List<TransactionCategory> _categoryOptions() {
     final active = widget.categories
         .where((category) => category.type == _type && !category.isArchived)
         .toList();
-    if (!active.any((category) => category.id == _category.id) && _category.type == _type) {
+    if (!active.any((category) => category.id == _category.id) &&
+        _category.type == _type) {
       active.add(_category);
     }
     return active;
@@ -202,17 +239,17 @@ class _AddRecurringRuleSheetState extends State<AddRecurringRuleSheet> {
     );
   }
 
-  InputDecoration _decoration(String label, IconData icon) => InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.primary),
-        filled: true,
-        fillColor: AppColors.background,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-      );
+  InputDecoration _decoration(String label, IconData icon) {
+    return AppFormStyle.decoration(
+      label: label,
+      icon: icon,
+    );
+  }
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
+      builder: AppSelectorStyle.datePickerBuilder,
       initialDate: _firstDueDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),

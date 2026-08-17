@@ -41,6 +41,7 @@ class TransactionEntry {
     final groupId = transferGroupId;
     return groupId != null && groupId == other.transferGroupId;
   }
+
   bool get countsAsIncome => isIncome && !isTransfer && !isReconciliation;
   bool get countsAsExpense => !isIncome && !isTransfer && !isReconciliation;
   double get signedAmount => isIncome ? amount : -amount;

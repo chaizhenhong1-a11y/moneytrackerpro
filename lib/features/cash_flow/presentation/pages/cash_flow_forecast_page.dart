@@ -24,15 +24,20 @@ class CashFlowForecastPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([dashboardController, recurringController, accountController]),
+      listenable: Listenable.merge(
+          [dashboardController, recurringController, accountController]),
       builder: (context, _) {
         final projection = CashFlowForecastService.project(
           openingBalance: dashboardController.balance,
           rules: recurringController.rules,
-          activeAccountIds: accountController.activeAccounts.map((account) => account.id).toSet(),
+          activeAccountIds: accountController.activeAccounts
+              .map((account) => account.id)
+              .toSet(),
         );
         return Scaffold(
-          appBar: AppBar(title: const Text('Cash flow forecast', style: TextStyle(fontWeight: FontWeight.w800))),
+          appBar: AppBar(
+              title: const Text('Cash flow forecast',
+                  style: TextStyle(fontWeight: FontWeight.w800))),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
@@ -67,7 +72,9 @@ class CashFlowForecastPage extends StatelessWidget {
                       label: 'Lowest balance',
                       value: projection.lowestBalance,
                       icon: Icons.trending_down_rounded,
-                      valueColor: projection.lowestBalance < 0 ? AppColors.expense : AppColors.textPrimary,
+                      valueColor: projection.lowestBalance < 0
+                          ? AppColors.expense
+                          : AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -76,23 +83,28 @@ class CashFlowForecastPage extends StatelessWidget {
                       label: 'Day 30 balance',
                       value: projection.closingBalance,
                       icon: Icons.flag_outlined,
-                      valueColor: projection.closingBalance < 0 ? AppColors.expense : AppColors.textPrimary,
+                      valueColor: projection.closingBalance < 0
+                          ? AppColors.expense
+                          : AppColors.textPrimary,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 26),
-              const Text('Projected timeline', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+              const Text('Projected timeline',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
               const SizedBox(height: 4),
               const Text(
                 'Based on active recurring income and expenses for the next 30 days.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.4),
+                style: TextStyle(
+                    color: AppColors.textSecondary, fontSize: 12, height: 1.4),
               ),
               const SizedBox(height: 14),
               if (projection.points.isEmpty)
                 const _EmptyTimeline()
               else
-                ...projection.points.map((point) => _ProjectionTile(point: point)),
+                ...projection.points
+                    .map((point) => _ProjectionTile(point: point)),
             ],
           ),
         );
@@ -131,21 +143,31 @@ class _HealthCard extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-            child: Icon(danger ? Icons.warning_amber_rounded : Icons.auto_graph_rounded, color: danger ? AppColors.expense : AppColors.primary),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(16)),
+            child: Icon(
+                danger ? Icons.warning_amber_rounded : Icons.auto_graph_rounded,
+                color: danger ? AppColors.expense : AppColors.primary),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(headline, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                Text(headline,
+                    style: const TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 6),
-                Text(description, style: const TextStyle(color: AppColors.textSecondary, height: 1.4)),
+                Text(description,
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, height: 1.4)),
                 const SizedBox(height: 10),
                 Text(
                   'Starts at ${CurrencyFormatter.myr(projection.openingBalance)}',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -157,7 +179,11 @@ class _HealthCard extends StatelessWidget {
 }
 
 class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.label, required this.value, required this.icon, required this.valueColor});
+  const _MetricCard(
+      {required this.label,
+      required this.value,
+      required this.icon,
+      required this.valueColor});
 
   final String label;
   final double value;
@@ -178,9 +204,17 @@ class _MetricCard extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: AppColors.primary),
           const SizedBox(height: 12),
-          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600)),
           const SizedBox(height: 5),
-          Text(CurrencyFormatter.myr(value), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: valueColor)),
+          Text(CurrencyFormatter.myr(value),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: valueColor)),
         ],
       ),
     );
@@ -211,19 +245,25 @@ class _ProjectionTile extends StatelessWidget {
                 width: 42,
                 height: 42,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(14)),
-                child: Text('${point.date.day}', style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.primary)),
+                decoration: BoxDecoration(
+                    color: AppColors.primarySoft,
+                    borderRadius: BorderRadius.circular(14)),
+                child: Text('${point.date.day}',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w900, color: AppColors.primary)),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_formatDate(point.date), style: const TextStyle(fontWeight: FontWeight.w800)),
+                    Text(_formatDate(point.date),
+                        style: const TextStyle(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 3),
                     Text(
                       '${point.rules.length} scheduled ${point.rules.length == 1 ? 'item' : 'items'}',
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 12),
                     ),
                   ],
                 ),
@@ -233,12 +273,20 @@ class _ProjectionTile extends StatelessWidget {
                 children: [
                   Text(
                     '${positive ? '+' : '-'}${CurrencyFormatter.myr(point.change.abs())}',
-                    style: TextStyle(fontWeight: FontWeight.w800, color: positive ? AppColors.success : AppColors.expense),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color:
+                            positive ? AppColors.success : AppColors.expense),
                   ),
                   const SizedBox(height: 3),
                   Text(
                     CurrencyFormatter.myr(point.balance),
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: point.balance < 0 ? AppColors.expense : AppColors.textSecondary),
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: point.balance < 0
+                            ? AppColors.expense
+                            : AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -253,15 +301,23 @@ class _ProjectionTile extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(
-                    rule.type == TransactionType.income ? Icons.add_circle_outline_rounded : Icons.remove_circle_outline_rounded,
+                    rule.type == TransactionType.income
+                        ? Icons.add_circle_outline_rounded
+                        : Icons.remove_circle_outline_rounded,
                     size: 16,
-                    color: rule.type == TransactionType.income ? AppColors.success : AppColors.expense,
+                    color: rule.type == TransactionType.income
+                        ? AppColors.success
+                        : AppColors.expense,
                   ),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(rule.title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600))),
+                  Expanded(
+                      child: Text(rule.title,
+                          style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w600))),
                   Text(
                     '${rule.type == TransactionType.income ? '+' : '-'}${CurrencyFormatter.myr(rule.amount)}',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
@@ -280,17 +336,23 @@ class _EmptyTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22), border: Border.all(color: AppColors.border)),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.border)),
       child: const Column(
         children: [
-          Icon(Icons.event_available_outlined, size: 42, color: AppColors.primary),
+          Icon(Icons.event_available_outlined,
+              size: 42, color: AppColors.primary),
           SizedBox(height: 12),
-          Text('No scheduled cash flow', style: TextStyle(fontWeight: FontWeight.w800)),
+          Text('No scheduled cash flow',
+              style: TextStyle(fontWeight: FontWeight.w800)),
           SizedBox(height: 6),
           Text(
             'Active recurring transactions due in the next 30 days will appear here.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.4),
+            style: TextStyle(
+                color: AppColors.textSecondary, fontSize: 12, height: 1.4),
           ),
         ],
       ),
@@ -299,6 +361,19 @@ class _EmptyTimeline extends StatelessWidget {
 }
 
 String _formatDate(DateTime date) {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
   return '${months[date.month - 1]} ${date.day}, ${date.year}';
 }

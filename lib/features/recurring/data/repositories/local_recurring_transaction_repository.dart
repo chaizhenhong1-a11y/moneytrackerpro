@@ -6,7 +6,8 @@ import '../../../transactions/domain/entities/transaction_entry.dart';
 import '../../domain/entities/recurring_transaction_rule.dart';
 import '../../domain/repositories/recurring_transaction_repository.dart';
 
-class LocalRecurringTransactionRepository implements RecurringTransactionRepository {
+class LocalRecurringTransactionRepository
+    implements RecurringTransactionRepository {
   LocalRecurringTransactionRepository({SharedPreferencesAsync? preferences})
       : _preferences = preferences ?? SharedPreferencesAsync();
 
@@ -28,7 +29,8 @@ class LocalRecurringTransactionRepository implements RecurringTransactionReposit
         type: TransactionType.values.byName(json['type'] as String),
         category: json['category'] as String,
         accountId: json['accountId'] as String,
-        frequency: RecurringFrequency.values.byName(json['frequency'] as String),
+        frequency:
+            RecurringFrequency.values.byName(json['frequency'] as String),
         nextDueDate: DateTime.parse(json['nextDueDate'] as String),
         isPaused: json['isPaused'] as bool? ?? false,
       );

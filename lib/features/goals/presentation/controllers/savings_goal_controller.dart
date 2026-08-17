@@ -41,7 +41,8 @@ class SavingsGoalController extends ChangeNotifier {
     ]);
   }
 
-  Future<bool> deleteGoal(String id) => _save(_goals.where((goal) => goal.id != id).toList());
+  Future<bool> deleteGoal(String id) =>
+      _save(_goals.where((goal) => goal.id != id).toList());
 
   Future<bool> replaceAll(List<SavingsGoal> goals) => _save(goals);
 

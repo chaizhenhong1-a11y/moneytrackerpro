@@ -32,8 +32,11 @@ class CategoryBudgetController extends ChangeNotifier {
 
   Future<bool> setBudget(String categoryId, double amount) async {
     if (!amount.isFinite || amount < 0) return false;
-    final next = _budgets.where((item) => item.categoryId != categoryId).toList();
-    if (amount > 0) next.add(CategoryBudget(categoryId: categoryId, monthlyLimit: amount));
+    final next =
+        _budgets.where((item) => item.categoryId != categoryId).toList();
+    if (amount > 0) {
+      next.add(CategoryBudget(categoryId: categoryId, monthlyLimit: amount));
+    }
     return replaceAll(next);
   }
 

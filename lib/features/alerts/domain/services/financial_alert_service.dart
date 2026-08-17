@@ -8,14 +8,17 @@ abstract final class FinancialAlertService {
     required AppSettings settings,
   }) {
     final now = DateTime.now();
-    final monthly = transactions.where(
-      (item) => item.date.year == now.year && item.date.month == now.month,
-    ).toList();
+    final monthly = transactions
+        .where(
+          (item) => item.date.year == now.year && item.date.month == now.month,
+        )
+        .toList();
     final expenses = monthly.where((item) => item.countsAsExpense).toList();
     final incomeTotal = monthly
         .where((item) => item.countsAsIncome)
         .fold<double>(0, (sum, item) => sum + item.amount);
-    final expenseTotal = expenses.fold<double>(0, (sum, item) => sum + item.amount);
+    final expenseTotal =
+        expenses.fold<double>(0, (sum, item) => sum + item.amount);
     final alerts = <FinancialAlert>[];
 
     if (settings.budgetAlertsEnabled && settings.monthlyBudget > 0) {
@@ -27,7 +30,8 @@ abstract final class FinancialAlertService {
             type: FinancialAlertType.budgetExceeded,
             severity: FinancialAlertSeverity.critical,
             title: 'Monthly budget exceeded',
-            message: 'You are RM ${(expenseTotal - settings.monthlyBudget).toStringAsFixed(2)} over your monthly budget.',
+            message:
+                'You are RM ${(expenseTotal - settings.monthlyBudget).toStringAsFixed(2)} over your monthly budget.',
           ),
         );
       } else if (ratio >= .8) {
@@ -37,7 +41,8 @@ abstract final class FinancialAlertService {
             type: FinancialAlertType.budgetWarning,
             severity: FinancialAlertSeverity.warning,
             title: 'Budget is nearly used',
-            message: 'You have used ${(ratio * 100).toStringAsFixed(0)}% of this month’s budget.',
+            message:
+                'You have used ${(ratio * 100).toStringAsFixed(0)}% of this month’s budget.',
           ),
         );
       }
@@ -52,7 +57,8 @@ abstract final class FinancialAlertService {
             type: FinancialAlertType.largeExpense,
             severity: FinancialAlertSeverity.warning,
             title: 'Large expense detected',
-            message: '${largest.title} used RM ${largest.amount.toStringAsFixed(2)}, at least 25% of your monthly budget.',
+            message:
+                '${largest.title} used RM ${largest.amount.toStringAsFixed(2)}, at least 25% of your monthly budget.',
           ),
         );
       }
@@ -65,7 +71,8 @@ abstract final class FinancialAlertService {
           type: FinancialAlertType.positiveSavings,
           severity: FinancialAlertSeverity.success,
           title: 'Positive savings this month',
-          message: 'Income is ahead of expenses by RM ${(incomeTotal - expenseTotal).toStringAsFixed(2)}.',
+          message:
+              'Income is ahead of expenses by RM ${(incomeTotal - expenseTotal).toStringAsFixed(2)}.',
         ),
       );
     }
@@ -77,7 +84,8 @@ abstract final class FinancialAlertService {
           type: FinancialAlertType.noActivity,
           severity: FinancialAlertSeverity.info,
           title: 'Start tracking this month',
-          message: 'Record your first transaction to unlock spending insights and budget progress.',
+          message:
+              'Record your first transaction to unlock spending insights and budget progress.',
         ),
       );
     }

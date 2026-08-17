@@ -28,12 +28,14 @@ class AlertsPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Financial alerts', style: TextStyle(fontWeight: FontWeight.w800)),
+            title: const Text('Financial alerts',
+                style: TextStyle(fontWeight: FontWeight.w800)),
           ),
           body: RefreshIndicator(
             onRefresh: dashboardController.load,
             child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
               children: [
                 _AlertSummary(count: alerts.length),
@@ -46,7 +48,8 @@ class AlertsPage extends StatelessWidget {
                 const Text(
                   'Alerts are generated privately from data stored on this device.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                  style:
+                      TextStyle(color: AppColors.textSecondary, fontSize: 11),
                 ),
               ],
             ),
@@ -66,24 +69,33 @@ class _AlertSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF826CEB), AppColors.primaryDark]),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF826CEB), AppColors.primaryDark]),
         borderRadius: BorderRadius.circular(26),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: .14), shape: BoxShape.circle),
-            child: const Icon(Icons.notifications_active_outlined, color: Colors.white),
+            decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .14),
+                shape: BoxShape.circle),
+            child: const Icon(Icons.notifications_active_outlined,
+                color: Colors.white),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('$count active ${count == 1 ? 'alert' : 'alerts'}', style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w800)),
+                Text('$count active ${count == 1 ? 'alert' : 'alerts'}',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800)),
                 const SizedBox(height: 4),
-                const Text('Updated from your latest activity', style: TextStyle(color: Color(0xFFDCD6FF), fontSize: 12)),
+                const Text('Updated from your latest activity',
+                    style: TextStyle(color: Color(0xFFDCD6FF), fontSize: 12)),
               ],
             ),
           ),
@@ -110,7 +122,9 @@ class _AlertCard extends StatelessWidget {
             Container(
               width: 46,
               height: 46,
-              decoration: BoxDecoration(color: style.color.withValues(alpha: .12), borderRadius: BorderRadius.circular(15)),
+              decoration: BoxDecoration(
+                  color: style.color.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(15)),
               child: Icon(_iconFor(alert.type), color: style.color),
             ),
             const SizedBox(width: 13),
@@ -120,16 +134,28 @@ class _AlertCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(child: Text(alert.title, style: const TextStyle(fontWeight: FontWeight.w700))),
+                      Expanded(
+                          child: Text(alert.title,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w700))),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(color: style.color.withValues(alpha: .1), borderRadius: BorderRadius.circular(10)),
-                        child: Text(style.label, style: TextStyle(color: style.color, fontSize: 9, fontWeight: FontWeight.w800)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                            color: style.color.withValues(alpha: .1),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Text(style.label,
+                            style: TextStyle(
+                                color: style.color,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800)),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(alert.message, style: const TextStyle(color: AppColors.textSecondary, height: 1.4)),
+                  Text(alert.message,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, height: 1.4)),
                 ],
               ),
             ),
@@ -140,10 +166,14 @@ class _AlertCard extends StatelessWidget {
   }
 
   _AlertStyle _styleFor(FinancialAlertSeverity severity) => switch (severity) {
-        FinancialAlertSeverity.info => const _AlertStyle(AppColors.primary, 'INFO'),
-        FinancialAlertSeverity.success => const _AlertStyle(AppColors.success, 'GOOD'),
-        FinancialAlertSeverity.warning => const _AlertStyle(Color(0xFFF59E0B), 'CHECK'),
-        FinancialAlertSeverity.critical => const _AlertStyle(AppColors.expense, 'URGENT'),
+        FinancialAlertSeverity.info =>
+          const _AlertStyle(AppColors.primary, 'INFO'),
+        FinancialAlertSeverity.success =>
+          const _AlertStyle(AppColors.success, 'GOOD'),
+        FinancialAlertSeverity.warning =>
+          const _AlertStyle(Color(0xFFF59E0B), 'CHECK'),
+        FinancialAlertSeverity.critical =>
+          const _AlertStyle(AppColors.expense, 'URGENT'),
       };
 
   IconData _iconFor(FinancialAlertType type) => switch (type) {
@@ -165,11 +195,14 @@ class _AllClearCard extends StatelessWidget {
         padding: EdgeInsets.all(34),
         child: Column(
           children: [
-            Icon(Icons.check_circle_outline_rounded, color: AppColors.success, size: 44),
+            Icon(Icons.check_circle_outline_rounded,
+                color: AppColors.success, size: 44),
             SizedBox(height: 12),
-            Text('Everything looks good', style: TextStyle(fontWeight: FontWeight.w700)),
+            Text('Everything looks good',
+                style: TextStyle(fontWeight: FontWeight.w700)),
             SizedBox(height: 5),
-            Text('There are no financial alerts right now.', style: TextStyle(color: AppColors.textSecondary)),
+            Text('There are no financial alerts right now.',
+                style: TextStyle(color: AppColors.textSecondary)),
           ],
         ),
       ),

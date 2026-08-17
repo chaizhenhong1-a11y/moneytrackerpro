@@ -36,12 +36,14 @@ class AccountDetailPage extends StatelessWidget {
         final expenses = transactions
             .where((item) => item.countsAsExpense)
             .fold<double>(0, (sum, item) => sum + item.amount);
-        final balance = transactions.fold<double>(0, (sum, item) => sum + item.signedAmount);
+        final balance = transactions.fold<double>(
+            0, (sum, item) => sum + item.signedAmount);
         final style = _style(account.type);
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(account.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+            title: Text(account.name,
+                style: const TextStyle(fontWeight: FontWeight.w800)),
             actions: [
               IconButton(
                 tooltip: 'Reconcile account',
@@ -102,12 +104,14 @@ class AccountDetailPage extends StatelessWidget {
                   const Expanded(
                     child: Text(
                       'Activity',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                     ),
                   ),
                   Text(
                     '${transactions.length} ${transactions.length == 1 ? 'transaction' : 'transactions'}',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
@@ -123,7 +127,8 @@ class AccountDetailPage extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildGroupedTransactions(BuildContext context, List<TransactionEntry> transactions) {
+  List<Widget> _buildGroupedTransactions(
+      BuildContext context, List<TransactionEntry> transactions) {
     final widgets = <Widget>[];
     DateTime? previousDay;
 
@@ -149,7 +154,9 @@ class AccountDetailPage extends StatelessWidget {
       widgets.add(
         _AccountTransactionTile(
           transaction: item,
-          onTap: item.isTransfer ? () => _showTransferActions(context, item) : null,
+          onTap: item.isTransfer
+              ? () => _showTransferActions(context, item)
+              : null,
         ),
       );
     }
@@ -157,7 +164,8 @@ class AccountDetailPage extends StatelessWidget {
     return widgets;
   }
 
-  Future<void> _openReconciliation(BuildContext context, double bookBalance) async {
+  Future<void> _openReconciliation(
+      BuildContext context, double bookBalance) async {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -174,11 +182,14 @@ class AccountDetailPage extends StatelessWidget {
     );
   }
 
-  Future<void> _showTransferActions(BuildContext context, TransactionEntry transaction) async {
+  Future<void> _showTransferActions(
+      BuildContext context, TransactionEntry transaction) async {
     final pair = dashboardController.transferPairFor(transaction);
     if (pair.length != 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This transfer pair is incomplete and cannot be changed safely.')),
+        const SnackBar(
+            content: Text(
+                'This transfer pair is incomplete and cannot be changed safely.')),
       );
       return;
     }
@@ -192,7 +203,9 @@ class AccountDetailPage extends StatelessWidget {
           'Edit or cancel it as one transfer to keep balances in sync.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close')),
+          TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Close')),
           TextButton.icon(
             onPressed: () => Navigator.pop(dialogContext, 'edit'),
             icon: const Icon(Icons.edit_outlined),
@@ -216,7 +229,9 @@ class AccountDetailPage extends StatelessWidget {
     if (!context.mounted) return;
     if (removed == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(dashboardController.errorMessage ?? 'Unable to cancel the transfer.')),
+        SnackBar(
+            content: Text(dashboardController.errorMessage ??
+                'Unable to cancel the transfer.')),
       );
       return;
     }
@@ -233,10 +248,13 @@ class AccountDetailPage extends StatelessWidget {
       );
   }
 
-  Future<void> _editTransfer(BuildContext context, TransactionEntry transaction) async {
+  Future<void> _editTransfer(
+      BuildContext context, TransactionEntry transaction) async {
     if (allAccounts.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add at least two accounts before editing a transfer.')),
+        const SnackBar(
+            content:
+                Text('Add at least two accounts before editing a transfer.')),
       );
       return;
     }
@@ -279,10 +297,14 @@ class AccountDetailPage extends StatelessWidget {
   }
 
   static _AccountStyle _style(FinanceAccountType type) => switch (type) {
-        FinanceAccountType.cash => const _AccountStyle(Icons.payments_outlined, AppColors.success),
-        FinanceAccountType.bank => const _AccountStyle(Icons.account_balance_outlined, AppColors.primary),
-        FinanceAccountType.eWallet => const _AccountStyle(Icons.phone_android_rounded, Color(0xFF5D9CEC)),
-        FinanceAccountType.savings => const _AccountStyle(Icons.savings_outlined, Color(0xFFE96CB5)),
+        FinanceAccountType.cash =>
+          const _AccountStyle(Icons.payments_outlined, AppColors.success),
+        FinanceAccountType.bank => const _AccountStyle(
+            Icons.account_balance_outlined, AppColors.primary),
+        FinanceAccountType.eWallet =>
+          const _AccountStyle(Icons.phone_android_rounded, Color(0xFF5D9CEC)),
+        FinanceAccountType.savings =>
+          const _AccountStyle(Icons.savings_outlined, Color(0xFFE96CB5)),
       };
 }
 
@@ -352,7 +374,8 @@ class _AccountHero extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       _typeName(account.type),
-                      style: const TextStyle(color: Color(0xFFDCD6FF), fontSize: 12),
+                      style: const TextStyle(
+                          color: Color(0xFFDCD6FF), fontSize: 12),
                     ),
                   ],
                 ),
@@ -365,7 +388,8 @@ class _AccountHero extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 28),
-          const Text('Current balance', style: TextStyle(color: Color(0xFFDCD6FF), fontSize: 12)),
+          const Text('Current balance',
+              style: TextStyle(color: Color(0xFFDCD6FF), fontSize: 12)),
           const SizedBox(height: 5),
           Text(
             CurrencyFormatter.myr(balance),
@@ -425,7 +449,9 @@ class _MetricCard extends StatelessWidget {
               child: Icon(icon, color: color, size: 19),
             ),
             const SizedBox(height: 13),
-            Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+            Text(label,
+                style: const TextStyle(
+                    color: AppColors.textSecondary, fontSize: 11)),
             const SizedBox(height: 4),
             Text(
               CurrencyFormatter.myr(amount),
@@ -456,47 +482,49 @@ class _AccountTransactionTile extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: transaction.color.withValues(alpha: .12),
-                borderRadius: BorderRadius.circular(14),
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: transaction.color.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child:
+                    Icon(transaction.icon, color: transaction.color, size: 21),
               ),
-              child: Icon(transaction.icon, color: transaction.color, size: 21),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    transaction.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    transaction.category,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
-                  ),
-                ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      transaction.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      transaction.category,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 11),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              '${transaction.isIncome ? '+' : '-'}${CurrencyFormatter.myr(transaction.amount)}',
-              style: TextStyle(
-                color: transaction.isTransfer
-                    ? AppColors.primary
-                    : transaction.isIncome
-                        ? AppColors.success
-                        : AppColors.expense,
-                fontWeight: FontWeight.w800,
+              const SizedBox(width: 10),
+              Text(
+                '${transaction.isIncome ? '+' : '-'}${CurrencyFormatter.myr(transaction.amount)}',
+                style: TextStyle(
+                  color: transaction.isTransfer
+                      ? AppColors.primary
+                      : transaction.isIncome
+                          ? AppColors.success
+                          : AppColors.expense,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-            ),
             ],
           ),
         ),
@@ -522,15 +550,18 @@ class _EmptyActivity extends StatelessWidget {
                 color: AppColors.primarySoft,
                 borderRadius: BorderRadius.circular(18),
               ),
-              child: const Icon(Icons.receipt_long_outlined, color: AppColors.primary),
+              child: const Icon(Icons.receipt_long_outlined,
+                  color: AppColors.primary),
             ),
             const SizedBox(height: 14),
-            const Text('No activity yet', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            const Text('No activity yet',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
             const SizedBox(height: 6),
             const Text(
               'Transactions assigned to this account will appear here automatically.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.45),
+              style: TextStyle(
+                  color: AppColors.textSecondary, fontSize: 12, height: 1.45),
             ),
           ],
         ),

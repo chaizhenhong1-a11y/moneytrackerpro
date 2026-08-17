@@ -44,7 +44,8 @@ class _AccountStatementPageState extends State<AccountStatementPage> {
             .where((item) => item.date.isBefore(start))
             .fold<double>(0, (sum, item) => sum + item.signedAmount);
         final period = all
-            .where((item) => !item.date.isBefore(start) && item.date.isBefore(end))
+            .where(
+                (item) => !item.date.isBefore(start) && item.date.isBefore(end))
             .toList(growable: false)
           ..sort((a, b) => b.date.compareTo(a.date));
         final income = period
@@ -62,12 +63,14 @@ class _AccountStatementPageState extends State<AccountStatementPage> {
         final reconciliation = period
             .where((item) => item.isReconciliation)
             .fold<double>(0, (sum, item) => sum + item.signedAmount);
-        final periodMovement = period.fold<double>(0, (sum, item) => sum + item.signedAmount);
+        final periodMovement =
+            period.fold<double>(0, (sum, item) => sum + item.signedAmount);
         final closingBalance = openingBalance + periodMovement;
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Monthly statement', style: TextStyle(fontWeight: FontWeight.w800)),
+            title: const Text('Monthly statement',
+                style: TextStyle(fontWeight: FontWeight.w800)),
           ),
           body: ListView(
             physics: const BouncingScrollPhysics(),
@@ -98,11 +101,14 @@ class _AccountStatementPageState extends State<AccountStatementPage> {
               Row(
                 children: [
                   const Expanded(
-                    child: Text('Statement activity', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    child: Text('Statement activity',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w800)),
                   ),
                   Text(
                     '${period.length} ${period.length == 1 ? 'record' : 'records'}',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
@@ -110,7 +116,8 @@ class _AccountStatementPageState extends State<AccountStatementPage> {
               if (period.isEmpty)
                 const _EmptyStatement()
               else
-                ...period.map((item) => _StatementTransactionTile(transaction: item)),
+                ...period.map(
+                    (item) => _StatementTransactionTile(transaction: item)),
             ],
           ),
         );
@@ -149,12 +156,17 @@ class _MonthSelector extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Row(
           children: [
-            IconButton(onPressed: onPrevious, icon: const Icon(Icons.chevron_left_rounded)),
+            IconButton(
+                onPressed: onPrevious,
+                icon: const Icon(Icons.chevron_left_rounded)),
             Expanded(
               child: Column(
                 children: [
-                  Text(_monthName(month.month), style: const TextStyle(fontWeight: FontWeight.w800)),
-                  Text('${month.year}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                  Text(_monthName(month.month),
+                      style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text('${month.year}',
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 11)),
                 ],
               ),
             ),
@@ -188,25 +200,36 @@ class _StatementHero extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF826CEB), AppColors.primaryDark]),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF826CEB), AppColors.primaryDark]),
         borderRadius: BorderRadius.circular(26),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(accountName, style: const TextStyle(color: Color(0xFFDCD6FF), fontWeight: FontWeight.w700)),
+          Text(accountName,
+              style: const TextStyle(
+                  color: Color(0xFFDCD6FF), fontWeight: FontWeight.w700)),
           const SizedBox(height: 5),
           Text(
             '${_monthName(month.month)} ${month.year}',
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
+            style: const TextStyle(
+                color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 22),
           Row(
             children: [
-              Expanded(child: _BalancePoint(label: 'Opening', amount: openingBalance)),
-              const Icon(Icons.arrow_forward_rounded, color: Color(0xFFDCD6FF), size: 18),
+              Expanded(
+                  child:
+                      _BalancePoint(label: 'Opening', amount: openingBalance)),
+              const Icon(Icons.arrow_forward_rounded,
+                  color: Color(0xFFDCD6FF), size: 18),
               const SizedBox(width: 12),
-              Expanded(child: _BalancePoint(label: 'Closing', amount: closingBalance, alignEnd: true)),
+              Expanded(
+                  child: _BalancePoint(
+                      label: 'Closing',
+                      amount: closingBalance,
+                      alignEnd: true)),
             ],
           ),
           const SizedBox(height: 16),
@@ -219,14 +242,19 @@ class _StatementHero extends StatelessWidget {
             child: Row(
               children: [
                 Icon(
-                  change >= 0 ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                  change >= 0
+                      ? Icons.trending_up_rounded
+                      : Icons.trending_down_rounded,
                   size: 18,
                   color: Colors.white,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   'Net account movement  ${change >= 0 ? '+' : '-'}${CurrencyFormatter.myr(change.abs())}',
-                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -238,7 +266,8 @@ class _StatementHero extends StatelessWidget {
 }
 
 class _BalancePoint extends StatelessWidget {
-  const _BalancePoint({required this.label, required this.amount, this.alignEnd = false});
+  const _BalancePoint(
+      {required this.label, required this.amount, this.alignEnd = false});
   final String label;
   final double amount;
   final bool alignEnd;
@@ -246,15 +275,18 @@ class _BalancePoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Color(0xFFDCD6FF), fontSize: 11)),
+        Text(label,
+            style: const TextStyle(color: Color(0xFFDCD6FF), fontSize: 11)),
         const SizedBox(height: 4),
         Text(
           CurrencyFormatter.myr(amount),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
         ),
       ],
     );
@@ -282,17 +314,37 @@ class _MovementGrid extends StatelessWidget {
       children: [
         Row(
           children: [
-            Expanded(child: _MovementCard(label: 'Income', amount: income, icon: Icons.south_west_rounded, color: AppColors.success)),
+            Expanded(
+                child: _MovementCard(
+                    label: 'Income',
+                    amount: income,
+                    icon: Icons.south_west_rounded,
+                    color: AppColors.success)),
             const SizedBox(width: 12),
-            Expanded(child: _MovementCard(label: 'Expenses', amount: expenses, icon: Icons.north_east_rounded, color: AppColors.expense)),
+            Expanded(
+                child: _MovementCard(
+                    label: 'Expenses',
+                    amount: expenses,
+                    icon: Icons.north_east_rounded,
+                    color: AppColors.expense)),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _MovementCard(label: 'Transfer in', amount: transferIn, icon: Icons.call_received_rounded, color: AppColors.primary)),
+            Expanded(
+                child: _MovementCard(
+                    label: 'Transfer in',
+                    amount: transferIn,
+                    icon: Icons.call_received_rounded,
+                    color: AppColors.primary)),
             const SizedBox(width: 12),
-            Expanded(child: _MovementCard(label: 'Transfer out', amount: transferOut, icon: Icons.call_made_rounded, color: AppColors.primary)),
+            Expanded(
+                child: _MovementCard(
+                    label: 'Transfer out',
+                    amount: transferOut,
+                    icon: Icons.call_made_rounded,
+                    color: AppColors.primary)),
           ],
         ),
         const SizedBox(height: 12),
@@ -332,7 +384,9 @@ class _MovementCard extends StatelessWidget {
             Container(
               width: 38,
               height: 38,
-              decoration: BoxDecoration(color: color.withValues(alpha: .11), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: color.withValues(alpha: .11),
+                  borderRadius: BorderRadius.circular(12)),
               child: Icon(icon, color: color, size: 19),
             ),
             const SizedBox(width: 10),
@@ -340,13 +394,16 @@ class _MovementCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                  Text(label,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 10)),
                   const SizedBox(height: 3),
                   Text(
                     '$prefix${CurrencyFormatter.myr(amount)}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w800),
                   ),
                 ],
               ),
@@ -384,11 +441,15 @@ class _StatementTransactionTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(transaction.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700)),
+                  Text(transaction.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
                   Text(
                     '${transaction.category} · ${_dateLabel(transaction.date)}',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 11),
                   ),
                 ],
               ),
@@ -425,16 +486,21 @@ class _EmptyStatement extends StatelessWidget {
             Container(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(18)),
-              child: const Icon(Icons.calendar_view_month_rounded, color: AppColors.primary),
+              decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(18)),
+              child: const Icon(Icons.calendar_view_month_rounded,
+                  color: AppColors.primary),
             ),
             const SizedBox(height: 13),
-            const Text('No activity this month', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            const Text('No activity this month',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
             const SizedBox(height: 6),
             const Text(
               'The opening and closing balances still reflect activity from earlier months.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.45),
+              style: TextStyle(
+                  color: AppColors.textSecondary, fontSize: 12, height: 1.45),
             ),
           ],
         ),
@@ -459,6 +525,19 @@ String _monthName(int month) => const [
     ][month - 1];
 
 String _dateLabel(DateTime date) {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
   return '${date.day} ${months[date.month - 1]}';
 }

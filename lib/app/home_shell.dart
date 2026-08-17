@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_colors.dart';
-import '../features/dashboard/data/dashboard_demo_data.dart';
 import '../features/categories/data/repositories/local_category_repository.dart';
 import '../features/categories/presentation/controllers/category_controller.dart';
 import '../features/category_budgets/data/repositories/local_category_budget_repository.dart';
@@ -9,8 +8,8 @@ import '../features/category_budgets/presentation/controllers/category_budget_co
 import '../features/accounts/data/repositories/local_account_repository.dart';
 import '../features/accounts/presentation/controllers/account_controller.dart';
 import '../features/dashboard/presentation/controllers/dashboard_controller.dart';
-import '../features/dashboard/presentation/pages/dashboard_page.dart';
-import '../features/statistics/presentation/pages/statistics_page.dart';
+import '../features/dashboard/presentation/pages/home_overview_page.dart';
+import '../features/insights/presentation/pages/financial_insights_page.dart';
 import '../features/settings/data/repositories/local_settings_repository.dart';
 import '../features/recurring/data/repositories/local_recurring_transaction_repository.dart';
 import '../features/goals/data/repositories/local_savings_goal_repository.dart';
@@ -44,18 +43,20 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    final transactionRepository = LocalTransactionRepository(seed: DashboardDemoData.transactions);
+    final transactionRepository = LocalTransactionRepository();
     _controller = DashboardController(transactionRepository);
     _settingsController = SettingsController(LocalSettingsRepository());
     _accountController = AccountController(LocalAccountRepository());
     _categoryController = CategoryController(LocalCategoryRepository());
-    _categoryBudgetController = CategoryBudgetController(LocalCategoryBudgetRepository());
+    _categoryBudgetController =
+        CategoryBudgetController(LocalCategoryBudgetRepository());
     _recurringController = RecurringTransactionController(
       LocalRecurringTransactionRepository(),
       transactionRepository,
       _categoryController,
     );
-    _savingsGoalController = SavingsGoalController(LocalSavingsGoalRepository());
+    _savingsGoalController =
+        SavingsGoalController(LocalSavingsGoalRepository());
     _debtController = DebtController(LocalDebtRepository());
     _initializeData();
   }
@@ -71,7 +72,9 @@ class _HomeShellState extends State<HomeShell> {
       _debtController.load(),
     ]);
     await _recurringController.processDueTransactions(
-      activeAccountIds: _accountController.activeAccounts.map((account) => account.id).toSet(),
+      activeAccountIds: _accountController.activeAccounts
+          .map((account) => account.id)
+          .toSet(),
     );
     await _controller.load();
   }
@@ -95,10 +98,11 @@ class _HomeShellState extends State<HomeShell> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          DashboardPage(
+          HomeOverviewPage(
             controller: _controller,
             settingsController: _settingsController,
             onShowTransactions: () => setState(() => _selectedIndex = 2),
+            onShowMore: () => setState(() => _selectedIndex = 3),
             accountController: _accountController,
             recurringController: _recurringController,
             savingsGoalController: _savingsGoalController,
@@ -106,7 +110,7 @@ class _HomeShellState extends State<HomeShell> {
             categoryBudgetController: _categoryBudgetController,
             debtController: _debtController,
           ),
-          StatisticsPage(controller: _controller),
+          FinancialInsightsPage(controller: _controller),
           TransactionsPage(
             controller: _controller,
             accountController: _accountController,
@@ -128,9 +132,12 @@ class _HomeShellState extends State<HomeShell> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        onDestinationSelected: (index) =>
+            setState(() => _selectedIndex = index),
         backgroundColor: Colors.white,
         indicatorColor: AppColors.primarySoft,
+        elevation: 0,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -138,9 +145,9 @@ class _HomeShellState extends State<HomeShell> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.pie_chart_outline_rounded),
-            selectedIcon: Icon(Icons.pie_chart_rounded),
-            label: 'Statistics',
+            icon: Icon(Icons.insights_outlined),
+            selectedIcon: Icon(Icons.insights_rounded),
+            label: 'Insights',
           ),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
@@ -148,9 +155,9 @@ class _HomeShellState extends State<HomeShell> {
             label: 'Transactions',
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            icon: Icon(Icons.grid_view_outlined),
+            selectedIcon: Icon(Icons.grid_view_rounded),
+            label: 'More',
           ),
         ],
       ),

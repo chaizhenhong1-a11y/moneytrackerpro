@@ -1,4 +1,11 @@
-enum FinancialAlertType { budgetWarning, budgetExceeded, largeExpense, positiveSavings, noActivity }
+enum FinancialAlertType {
+  budgetWarning,
+  budgetExceeded,
+  largeExpense,
+  positiveSavings,
+  noActivity
+}
+
 enum FinancialAlertSeverity { info, success, warning, critical }
 
 class FinancialAlert {

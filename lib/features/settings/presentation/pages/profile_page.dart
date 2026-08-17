@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
-import '../controllers/settings_controller.dart';
-import '../../../backup/presentation/pages/data_backup_page.dart';
-import '../../../dashboard/presentation/controllers/dashboard_controller.dart';
 import '../../../accounts/presentation/controllers/account_controller.dart';
 import '../../../accounts/presentation/pages/accounts_page.dart';
+import '../../../backup/presentation/pages/data_backup_page.dart';
 import '../../../categories/presentation/controllers/category_controller.dart';
 import '../../../categories/presentation/pages/categories_page.dart';
 import '../../../category_budgets/presentation/controllers/category_budget_controller.dart';
 import '../../../category_budgets/presentation/pages/category_budgets_page.dart';
-import '../../../recurring/presentation/controllers/recurring_transaction_controller.dart';
-import '../../../goals/presentation/controllers/savings_goal_controller.dart';
+import '../../../dashboard/presentation/controllers/dashboard_controller.dart';
 import '../../../debts/presentation/controllers/debt_controller.dart';
 import '../../../debts/presentation/pages/debts_page.dart';
+import '../../../goals/presentation/controllers/savings_goal_controller.dart';
+import '../../../goals/presentation/pages/savings_goals_page.dart';
+import '../../../recurring/presentation/controllers/recurring_transaction_controller.dart';
+import '../../../recurring/presentation/pages/recurring_transactions_page.dart';
+import '../controllers/settings_controller.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({
@@ -41,18 +43,71 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([controller, dashboardController, accountController, categoryController, debtController]),
+      listenable: Listenable.merge([
+        controller,
+        dashboardController,
+        accountController,
+        recurringController,
+        savingsGoalController,
+        categoryController,
+        categoryBudgetController,
+        debtController,
+      ]),
       builder: (context, _) {
         final settings = controller.settings;
+
         return Scaffold(
-          appBar: AppBar(title: const Text('Profile', style: TextStyle(fontWeight: FontWeight.w800))),
+          appBar: AppBar(
+            title: const Text(
+              'More',
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ),
           body: ListView(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
             children: [
               _ProfileHeader(name: settings.displayName),
-              const SizedBox(height: 22),
-              const _GroupLabel('FINANCIAL PREFERENCES'),
+              const SizedBox(height: 18),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.tune_rounded, color: AppColors.primary),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Manage your money setup',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Manage accounts, budgets, goals and recurring money here. '
+                            'Use Insights when you want guidance.',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const _GroupLabel('MONEY MANAGEMENT'),
               const SizedBox(height: 9),
               Card(
                 child: Column(
@@ -60,7 +115,8 @@ class ProfilePage extends StatelessWidget {
                     _SettingsTile(
                       icon: Icons.account_balance_wallet_outlined,
                       title: 'Accounts',
-                      subtitle: '${accountController.accounts.length} connected accounts',
+                      subtitle:
+                          '${accountController.accounts.length} accounts · balances & transfers',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (context) => AccountsPage(
@@ -71,35 +127,20 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Divider(height: 1, indent: 64),
-                    _SettingsTile(
-                      icon: Icons.credit_card_outlined,
-                      title: 'Debts & liabilities',
-                      subtitle: '${debtController.activeCount} active · ${CurrencyFormatter.myr(debtController.totalOutstanding)}',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(builder: (context) => DebtsPage(controller: debtController)),
-                      ),
-                    ),
-                    const Divider(height: 1, indent: 64),
-                    _SettingsTile(
-                      icon: Icons.category_outlined,
-                      title: 'Categories',
-                      subtitle: '${categoryController.activeCategories.length} active categories',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (context) => CategoriesPage(
-                            controller: categoryController,
-                            dashboardController: dashboardController,
-                            recurringController: recurringController,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 1, indent: 64),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const _GroupLabel('PLANNING'),
+              const SizedBox(height: 9),
+              Card(
+                child: Column(
+                  children: [
                     _SettingsTile(
                       icon: Icons.donut_small_rounded,
-                      title: 'Category budgets',
-                      subtitle: '${categoryBudgetController.budgets.length} monthly limits',
+                      title: 'Budgets',
+                      subtitle:
+                          '${categoryBudgetController.budgets.length} monthly limits',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (context) => CategoryBudgetsPage(
@@ -111,6 +152,59 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
                     const Divider(height: 1, indent: 64),
+                    _SettingsTile(
+                      icon: Icons.savings_outlined,
+                      title: 'Savings goals',
+                      subtitle:
+                          '${savingsGoalController.goals.length} active goals',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => SavingsGoalsPage(
+                            controller: savingsGoalController,
+                            accountController: accountController,
+                            dashboardController: dashboardController,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Divider(height: 1, indent: 64),
+                    _SettingsTile(
+                      icon: Icons.credit_card_outlined,
+                      title: 'Debts & liabilities',
+                      subtitle:
+                          '${debtController.activeCount} active · ${CurrencyFormatter.myr(debtController.totalOutstanding)}',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) =>
+                              DebtsPage(controller: debtController),
+                        ),
+                      ),
+                    ),
+                    const Divider(height: 1, indent: 64),
+                    _SettingsTile(
+                      icon: Icons.repeat_rounded,
+                      title: 'Recurring money',
+                      subtitle:
+                          '${recurringController.rules.length} scheduled rules',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => RecurringTransactionsPage(
+                            controller: recurringController,
+                            accountController: accountController,
+                            categoryController: categoryController,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const _GroupLabel('YOUR PREFERENCES'),
+              const SizedBox(height: 9),
+              Card(
+                child: Column(
+                  children: [
                     _SettingsTile(
                       icon: Icons.person_outline_rounded,
                       title: 'Personal details',
@@ -126,9 +220,16 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const Divider(height: 1, indent: 64),
                     SwitchListTile(
-                      secondary: const _SettingsIcon(icon: Icons.notifications_active_outlined),
-                      title: const Text('Budget alerts', style: TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Warn me when spending approaches the limit'),
+                      secondary: const _SettingsIcon(
+                        icon: Icons.notifications_active_outlined,
+                      ),
+                      title: const Text(
+                        'Budget alerts',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: const Text(
+                        'Warn me when spending approaches the limit',
+                      ),
                       value: settings.budgetAlertsEnabled,
                       activeThumbColor: AppColors.primary,
                       onChanged: controller.setBudgetAlerts,
@@ -136,16 +237,33 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 22),
-              const _GroupLabel('APPLICATION'),
+              const SizedBox(height: 20),
+              const _GroupLabel('MORE SETTINGS'),
               const SizedBox(height: 9),
               Card(
                 child: Column(
                   children: [
                     _SettingsTile(
+                      icon: Icons.category_outlined,
+                      title: 'Categories',
+                      subtitle:
+                          '${categoryController.activeCategories.length} active categories',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => CategoriesPage(
+                            controller: categoryController,
+                            dashboardController: dashboardController,
+                            recurringController: recurringController,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Divider(height: 1, indent: 64),
+                    _SettingsTile(
                       icon: Icons.cloud_sync_outlined,
                       title: 'Data & backup',
-                      subtitle: '${dashboardController.transactions.length} saved transactions',
+                      subtitle:
+                          '${dashboardController.transactions.length} saved transactions',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (context) => DataBackupPage(
@@ -162,9 +280,17 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
                     const Divider(height: 1, indent: 64),
-                    const _SettingsTile(icon: Icons.currency_exchange_rounded, title: 'Currency', subtitle: 'Malaysian Ringgit (MYR)'),
+                    const _SettingsTile(
+                      icon: Icons.currency_exchange_rounded,
+                      title: 'Currency',
+                      subtitle: 'Malaysian Ringgit (MYR)',
+                    ),
                     const Divider(height: 1, indent: 64),
-                    const _SettingsTile(icon: Icons.language_rounded, title: 'Language', subtitle: 'English'),
+                    const _SettingsTile(
+                      icon: Icons.language_rounded,
+                      title: 'Language',
+                      subtitle: 'English',
+                    ),
                     const Divider(height: 1, indent: 64),
                     _SettingsTile(
                       icon: Icons.info_outline_rounded,
@@ -182,7 +308,11 @@ class ProfilePage extends StatelessWidget {
               ),
               if (controller.errorMessage != null) ...[
                 const SizedBox(height: 16),
-                Text(controller.errorMessage!, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.expense)),
+                Text(
+                  controller.errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: AppColors.expense),
+                ),
               ],
             ],
           ),
@@ -192,8 +322,10 @@ class ProfilePage extends StatelessWidget {
   }
 
   Future<void> _showEditProfile(BuildContext context) async {
-    final nameController = TextEditingController(text: controller.settings.displayName);
-    final budgetController = TextEditingController(text: controller.settings.monthlyBudget.toStringAsFixed(2));
+    final nameController =
+        TextEditingController(text: controller.settings.displayName);
+    final budgetController = TextEditingController(
+        text: controller.settings.monthlyBudget.toStringAsFixed(2));
     final formKey = GlobalKey<FormState>();
 
     await showModalBottomSheet<void>(
@@ -201,36 +333,58 @@ class ProfilePage extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(sheetContext).bottom),
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(sheetContext).bottom),
         child: Container(
           padding: const EdgeInsets.fromLTRB(22, 12, 22, 28),
-          decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
           child: Form(
             key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(width: 45, height: 5, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(10))),
-                const SizedBox(height: 22),
-                const Text('Edit profile', style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 22),
+                Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(10))),
+                const SizedBox(height: 20),
+                const Text('Edit profile',
+                    style:
+                        TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: nameController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(labelText: 'Display name', prefixIcon: Icon(Icons.person_outline_rounded), border: OutlineInputBorder()),
-                  validator: (value) => value == null || value.trim().length < 2 ? 'Enter at least 2 characters' : null,
+                  decoration: const InputDecoration(
+                      labelText: 'Display name',
+                      prefixIcon: Icon(Icons.person_outline_rounded),
+                      border: OutlineInputBorder()),
+                  validator: (value) => value == null || value.trim().length < 2
+                      ? 'Enter at least 2 characters'
+                      : null,
                 ),
                 const SizedBox(height: 14),
                 TextFormField(
                   controller: budgetController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: 'Monthly budget', prefixText: 'RM ', prefixIcon: Icon(Icons.flag_outlined), border: OutlineInputBorder()),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                      labelText: 'Monthly budget',
+                      prefixText: 'RM ',
+                      prefixIcon: Icon(Icons.flag_outlined),
+                      border: OutlineInputBorder()),
                   validator: (value) {
                     final amount = double.tryParse(value?.trim() ?? '');
-                    return amount == null || amount <= 0 ? 'Enter a valid budget greater than 0' : null;
+                    return amount == null || amount <= 0
+                        ? 'Enter a valid budget greater than 0'
+                        : null;
                   },
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: 20),
                 FilledButton(
                   onPressed: () async {
                     if (!formKey.currentState!.validate()) return;
@@ -238,9 +392,12 @@ class ProfilePage extends StatelessWidget {
                       displayName: nameController.text,
                       monthlyBudget: double.parse(budgetController.text.trim()),
                     );
-                    if (saved && sheetContext.mounted) Navigator.pop(sheetContext);
+                    if (saved && sheetContext.mounted) {
+                      Navigator.pop(sheetContext);
+                    }
                   },
-                  child: const Text('Save changes', style: TextStyle(fontWeight: FontWeight.w700)),
+                  child: const Text('Save changes',
+                      style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ],
             ),
@@ -265,9 +422,25 @@ class _ProfileHeader extends StatelessWidget {
         padding: const EdgeInsets.all(22),
         child: Row(
           children: [
-            Container(width: 68, height: 68, decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle), child: const Icon(Icons.person_rounded, color: AppColors.primary, size: 39)),
+            Container(
+                width: 68,
+                height: 68,
+                decoration: const BoxDecoration(
+                    color: AppColors.primarySoft, shape: BoxShape.circle),
+                child: const Icon(Icons.person_rounded,
+                    color: AppColors.primary, size: 39)),
             const SizedBox(width: 16),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(name, style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800)), const SizedBox(height: 5), const Text('MoneyTracker Pro member', style: TextStyle(color: AppColors.textSecondary))])),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(name,
+                      style: const TextStyle(
+                          fontSize: 21, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 5),
+                  const Text('MoneyTracker Pro member',
+                      style: TextStyle(color: AppColors.textSecondary))
+                ])),
             const Icon(Icons.verified_rounded, color: AppColors.primary),
           ],
         ),
@@ -277,7 +450,11 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({required this.icon, required this.title, required this.subtitle, this.onTap});
+  const _SettingsTile(
+      {required this.icon,
+      required this.title,
+      required this.subtitle,
+      this.onTap});
   final IconData icon;
   final String title;
   final String subtitle;
@@ -301,7 +478,13 @@ class _SettingsIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 38, height: 38, decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: AppColors.primary, size: 20));
+    return Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(12)),
+        child: Icon(icon, color: AppColors.primary, size: 20));
   }
 }
 
@@ -311,6 +494,13 @@ class _GroupLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: const EdgeInsets.only(left: 4), child: Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: .8)));
+    return Padding(
+        padding: const EdgeInsets.only(left: 4),
+        child: Text(label,
+            style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: .8)));
   }
 }

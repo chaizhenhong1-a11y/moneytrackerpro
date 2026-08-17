@@ -30,13 +30,17 @@ class LocalTransactionRepository implements TransactionRepository {
     try {
       final decoded = jsonDecode(storedValue) as List<dynamic>;
       final transactions = decoded
-          .map((item) => TransactionRecord.fromJson(item as Map<String, dynamic>).toEntity())
+          .map((item) =>
+              TransactionRecord.fromJson(item as Map<String, dynamic>)
+                  .toEntity())
           .toList();
       return _sort(transactions);
     } on FormatException {
-      throw const TransactionStorageException('Stored transaction data is invalid.');
+      throw const TransactionStorageException(
+          'Stored transaction data is invalid.');
     } on TypeError {
-      throw const TransactionStorageException('Stored transaction format is unsupported.');
+      throw const TransactionStorageException(
+          'Stored transaction format is unsupported.');
     }
   }
 
@@ -51,7 +55,8 @@ class LocalTransactionRepository implements TransactionRepository {
     final transactions = await getAll();
     final index = transactions.indexWhere((item) => item.id == transaction.id);
     if (index == -1) {
-      throw TransactionStorageException('Transaction not found: ${transaction.id}');
+      throw TransactionStorageException(
+          'Transaction not found: ${transaction.id}');
     }
     final updated = List<TransactionEntry>.of(transactions);
     updated[index] = transaction;
@@ -61,7 +66,8 @@ class LocalTransactionRepository implements TransactionRepository {
   @override
   Future<void> delete(String transactionId) async {
     final transactions = await getAll();
-    await _write(transactions.where((item) => item.id != transactionId).toList());
+    await _write(
+        transactions.where((item) => item.id != transactionId).toList());
   }
 
   @override

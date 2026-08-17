@@ -103,7 +103,8 @@ class _CurrencyChip extends StatelessWidget {
       child: const Row(
         children: [
           Text('MYR', style: TextStyle(color: Colors.white, fontSize: 12)),
-          Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 17),
+          Icon(Icons.keyboard_arrow_down_rounded,
+              color: Colors.white, size: 17),
         ],
       ),
     );
@@ -141,12 +142,15 @@ class _BalanceMetric extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(color: Color(0xFFDCD6FF), fontSize: 12)),
+              Text(label,
+                  style:
+                      const TextStyle(color: Color(0xFFDCD6FF), fontSize: 12)),
               const SizedBox(height: 3),
               Text(
                 CurrencyFormatter.myr(value),
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ],
           ),

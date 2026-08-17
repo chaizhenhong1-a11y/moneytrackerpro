@@ -34,7 +34,8 @@ class BudgetAlertsPage extends StatelessWidget {
         final alerts = _buildAlerts();
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Budget alerts', style: TextStyle(fontWeight: FontWeight.w800)),
+            title: const Text('Budget alerts',
+                style: TextStyle(fontWeight: FontWeight.w800)),
             actions: [
               IconButton(
                 tooltip: 'Manage category budgets',
@@ -54,7 +55,8 @@ class BudgetAlertsPage extends StatelessWidget {
           ),
           body: alerts.isEmpty
               ? _NoBudgetAlerts(
-                  hasBudgets: budgetController.budgets.any((item) => item.monthlyLimit > 0),
+                  hasBudgets: budgetController.budgets
+                      .any((item) => item.monthlyLimit > 0),
                 )
               : ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
@@ -91,8 +93,10 @@ class BudgetAlertsPage extends StatelessWidget {
               item.date.month == now.month)
           .toList()
         ..sort((a, b) => b.date.compareTo(a.date));
-      final spent = transactions.fold<double>(0, (sum, item) => sum + item.amount);
-      final ratio = budget.monthlyLimit == 0 ? 0.0 : spent / budget.monthlyLimit;
+      final spent =
+          transactions.fold<double>(0, (sum, item) => sum + item.amount);
+      final ratio =
+          budget.monthlyLimit == 0 ? 0.0 : spent / budget.monthlyLimit;
       if (ratio < .8) continue;
       result.add(
         _BudgetAlertData(
@@ -128,7 +132,8 @@ class _BudgetAlertData {
   final double spent;
   final List<TransactionEntry> transactions;
 
-  double get ratio => budget.monthlyLimit <= 0 ? 0 : spent / budget.monthlyLimit;
+  double get ratio =>
+      budget.monthlyLimit <= 0 ? 0 : spent / budget.monthlyLimit;
   double get remaining => budget.monthlyLimit - spent;
 
   _BudgetAlertLevel get level {
@@ -147,9 +152,12 @@ class _AlertOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final over = alerts.where((item) => item.level == _BudgetAlertLevel.over).length;
-    final reached = alerts.where((item) => item.level == _BudgetAlertLevel.reached).length;
-    final warning = alerts.where((item) => item.level == _BudgetAlertLevel.warning).length;
+    final over =
+        alerts.where((item) => item.level == _BudgetAlertLevel.over).length;
+    final reached =
+        alerts.where((item) => item.level == _BudgetAlertLevel.reached).length;
+    final warning =
+        alerts.where((item) => item.level == _BudgetAlertLevel.warning).length;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -160,7 +168,8 @@ class _AlertOverview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('This month', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          const Text('This month',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           const Text(
             'Budget alerts appear once a category reaches 80% of its monthly limit.',
@@ -169,9 +178,11 @@ class _AlertOverview extends StatelessWidget {
           const SizedBox(height: 18),
           Row(
             children: [
-              Expanded(child: _OverviewMetric(value: '$warning', label: 'Warning')),
+              Expanded(
+                  child: _OverviewMetric(value: '$warning', label: 'Warning')),
               const SizedBox(width: 8),
-              Expanded(child: _OverviewMetric(value: '$reached', label: 'Reached')),
+              Expanded(
+                  child: _OverviewMetric(value: '$reached', label: 'Reached')),
               const SizedBox(width: 8),
               Expanded(child: _OverviewMetric(value: '$over', label: 'Over')),
             ],
@@ -198,9 +209,13 @@ class _OverviewMetric extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+          Text(value,
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
           const SizedBox(height: 3),
-          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 11, color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -250,15 +265,21 @@ class _BudgetAlertCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(alert.categoryName, style: const TextStyle(fontWeight: FontWeight.w800)),
+                    Text(alert.categoryName,
+                        style: const TextStyle(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 3),
-                    Text(levelLabel, style: TextStyle(color: levelColor, fontSize: 12, fontWeight: FontWeight.w700)),
+                    Text(levelLabel,
+                        style: TextStyle(
+                            color: levelColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
               Text(
                 '${(alert.ratio * 100).round()}%',
-                style: TextStyle(color: levelColor, fontWeight: FontWeight.w800),
+                style:
+                    TextStyle(color: levelColor, fontWeight: FontWeight.w800),
               ),
             ],
           ),
@@ -278,14 +299,18 @@ class _BudgetAlertCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   '${CurrencyFormatter.myr(alert.spent)} of ${CurrencyFormatter.myr(alert.budget.monthlyLimit)}',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.textSecondary),
                 ),
               ),
               Text(
                 alert.remaining >= 0
                     ? '${CurrencyFormatter.myr(alert.remaining)} left'
                     : '${CurrencyFormatter.myr(-alert.remaining)} over',
-                style: TextStyle(fontSize: 12, color: levelColor, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                    fontSize: 12,
+                    color: levelColor,
+                    fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -293,7 +318,8 @@ class _BudgetAlertCard extends StatelessWidget {
             const SizedBox(height: 18),
             const Divider(height: 1),
             const SizedBox(height: 14),
-            const Text('Recent spending', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+            const Text('Recent spending',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
             const SizedBox(height: 10),
             for (final transaction in alert.transactions)
               TransactionTile(transaction: transaction),
@@ -320,12 +346,17 @@ class _NoBudgetAlerts extends StatelessWidget {
             Container(
               width: 72,
               height: 72,
-              decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(24)),
-              child: const Icon(Icons.notifications_none_rounded, color: AppColors.primary, size: 34),
+              decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(24)),
+              child: const Icon(Icons.notifications_none_rounded,
+                  color: AppColors.primary, size: 34),
             ),
             const SizedBox(height: 18),
             Text(
-              hasBudgets ? 'All category budgets are on track' : 'No category budgets yet',
+              hasBudgets
+                  ? 'All category budgets are on track'
+                  : 'No category budgets yet',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               textAlign: TextAlign.center,
             ),
@@ -335,7 +366,8 @@ class _NoBudgetAlerts extends StatelessWidget {
                   ? 'Nothing has reached the 80% warning level this month.'
                   : 'Set a monthly category budget to start receiving spending alerts.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary, height: 1.45),
+              style:
+                  const TextStyle(color: AppColors.textSecondary, height: 1.45),
             ),
           ],
         ),

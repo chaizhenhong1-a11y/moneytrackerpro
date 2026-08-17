@@ -18,8 +18,10 @@ class CategoryController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  List<TransactionCategory> activeFor(TransactionType type) => List.unmodifiable(
-        _categories.where((category) => category.type == type && !category.isArchived),
+  List<TransactionCategory> activeFor(TransactionType type) =>
+      List.unmodifiable(
+        _categories
+            .where((category) => category.type == type && !category.isArchived),
       );
 
   TransactionCategory resolve(String name, TransactionType type) {
@@ -49,7 +51,8 @@ class CategoryController extends ChangeNotifier {
     required Color color,
   }) {
     final normalized = name.trim();
-    if (_categories.any((category) => category.name.toLowerCase() == normalized.toLowerCase())) {
+    if (_categories.any((category) =>
+        category.name.toLowerCase() == normalized.toLowerCase())) {
       _errorMessage = 'A category with this name already exists.';
       notifyListeners();
       return Future.value(false);
@@ -74,7 +77,8 @@ class CategoryController extends ChangeNotifier {
   }) {
     final normalized = name.trim();
     if (_categories.any((category) =>
-        category.id != id && category.name.toLowerCase() == normalized.toLowerCase())) {
+        category.id != id &&
+        category.name.toLowerCase() == normalized.toLowerCase())) {
       _errorMessage = 'A category with this name already exists.';
       notifyListeners();
       return Future.value(false);
@@ -91,19 +95,23 @@ class CategoryController extends ChangeNotifier {
   Future<bool> setArchived(String id, bool isArchived) {
     final category = _categories.firstWhere((item) => item.id == id);
     if (isArchived && activeFor(category.type).length <= 1) {
-      _errorMessage = 'Keep at least one active ${category.type.name} category.';
+      _errorMessage =
+          'Keep at least one active ${category.type.name} category.';
       notifyListeners();
       return Future.value(false);
     }
     return _save(
       _categories
-          .map((item) => item.id == id ? item.copyWith(isArchived: isArchived) : item)
+          .map((item) =>
+              item.id == id ? item.copyWith(isArchived: isArchived) : item)
           .toList(),
     );
   }
 
   Future<bool> replaceAll(List<TransactionCategory> categories) {
-    return _save(categories.isEmpty ? TransactionCategories.defaults() : List.of(categories));
+    return _save(categories.isEmpty
+        ? TransactionCategories.defaults()
+        : List.of(categories));
   }
 
   Future<bool> _save(List<TransactionCategory> next) async {

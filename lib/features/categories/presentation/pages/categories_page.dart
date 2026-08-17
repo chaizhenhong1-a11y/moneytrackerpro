@@ -25,7 +25,8 @@ class CategoriesPage extends StatelessWidget {
       listenable: controller,
       builder: (context, _) => Scaffold(
         appBar: AppBar(
-          title: const Text('Categories', style: TextStyle(fontWeight: FontWeight.w800)),
+          title: const Text('Categories',
+              style: TextStyle(fontWeight: FontWeight.w800)),
           actions: [
             IconButton(
               tooltip: 'Add category',
@@ -45,19 +46,25 @@ class CategoriesPage extends StatelessWidget {
                   _CategorySection(
                     title: 'EXPENSE',
                     categories: controller.categories
-                        .where((category) => category.type == TransactionType.expense)
+                        .where((category) =>
+                            category.type == TransactionType.expense)
                         .toList(),
-                    onEdit: (category) => _openEditor(context, category: category),
-                    onArchive: (category) => controller.setArchived(category.id, !category.isArchived),
+                    onEdit: (category) =>
+                        _openEditor(context, category: category),
+                    onArchive: (category) => controller.setArchived(
+                        category.id, !category.isArchived),
                   ),
                   const SizedBox(height: 24),
                   _CategorySection(
                     title: 'INCOME',
                     categories: controller.categories
-                        .where((category) => category.type == TransactionType.income)
+                        .where((category) =>
+                            category.type == TransactionType.income)
                         .toList(),
-                    onEdit: (category) => _openEditor(context, category: category),
-                    onArchive: (category) => controller.setArchived(category.id, !category.isArchived),
+                    onEdit: (category) =>
+                        _openEditor(context, category: category),
+                    onArchive: (category) => controller.setArchived(
+                        category.id, !category.isArchived),
                   ),
                   if (controller.errorMessage != null) ...[
                     const SizedBox(height: 16),
@@ -73,7 +80,8 @@ class CategoriesPage extends StatelessWidget {
     );
   }
 
-  Future<void> _openEditor(BuildContext context, {TransactionCategory? category}) async {
+  Future<void> _openEditor(BuildContext context,
+      {TransactionCategory? category}) async {
     final result = await showModalBottomSheet<_CategoryDraft>(
       context: context,
       isScrollControlled: true,
@@ -106,8 +114,10 @@ class CategoriesPage extends StatelessWidget {
     );
     if (!saved || oldName == result.name) return;
 
-    await dashboardController.renameCategoryReferences(oldName: oldName, category: updated);
-    await recurringController.renameCategoryReferences(oldName: oldName, newName: result.name);
+    await dashboardController.renameCategoryReferences(
+        oldName: oldName, category: updated);
+    await recurringController.renameCategoryReferences(
+        oldName: oldName, newName: result.name);
   }
 }
 
@@ -148,7 +158,8 @@ class _CategorySection extends StatelessWidget {
                   onEdit: () => onEdit(categories[index]),
                   onArchive: () => onArchive(categories[index]),
                 ),
-                if (index != categories.length - 1) const Divider(height: 1, indent: 64),
+                if (index != categories.length - 1)
+                  const Divider(height: 1, indent: 64),
               ],
             ],
           ),
@@ -188,7 +199,11 @@ class _CategoryTile extends StatelessWidget {
           color: category.isArchived ? AppColors.textSecondary : null,
         ),
       ),
-      subtitle: Text(category.isArchived ? 'Inactive' : category.isSystem ? 'Built-in category' : 'Custom category'),
+      subtitle: Text(category.isArchived
+          ? 'Inactive'
+          : category.isSystem
+              ? 'Built-in category'
+              : 'Custom category'),
       trailing: PopupMenuButton<String>(
         onSelected: (value) => value == 'edit' ? onEdit() : onArchive(),
         itemBuilder: (context) => [
@@ -210,7 +225,9 @@ class _HintCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(22)),
+      decoration: BoxDecoration(
+          color: AppColors.primarySoft,
+          borderRadius: BorderRadius.circular(22)),
       child: const Row(
         children: [
           Icon(Icons.category_rounded, color: AppColors.primary),
@@ -299,55 +316,89 @@ class _CategoryEditorSheetState extends State<_CategoryEditorSheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(width: 45, height: 5, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(10))),
+                Container(
+                    width: 45,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(10))),
                 const SizedBox(height: 22),
-                Text(widget.category == null ? 'New category' : 'Edit category', style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
+                Text(widget.category == null ? 'New category' : 'Edit category',
+                    style: const TextStyle(
+                        fontSize: 21, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 22),
                 SegmentedButton<TransactionType>(
                   segments: const [
-                    ButtonSegment(value: TransactionType.expense, label: Text('Expense')),
-                    ButtonSegment(value: TransactionType.income, label: Text('Income')),
+                    ButtonSegment(
+                        value: TransactionType.expense, label: Text('Expense')),
+                    ButtonSegment(
+                        value: TransactionType.income, label: Text('Income')),
                   ],
                   selected: {_type},
-                  onSelectionChanged: widget.category == null ? (value) => setState(() => _type = value.first) : null,
+                  onSelectionChanged: widget.category == null
+                      ? (value) => setState(() => _type = value.first)
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _nameController,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(labelText: 'Category name', prefixIcon: Icon(Icons.edit_rounded), border: OutlineInputBorder()),
-                  validator: (value) => value == null || value.trim().length < 2 ? 'Enter at least 2 characters' : null,
+                  decoration: const InputDecoration(
+                      labelText: 'Category name',
+                      prefixIcon: Icon(Icons.edit_rounded),
+                      border: OutlineInputBorder()),
+                  validator: (value) => value == null || value.trim().length < 2
+                      ? 'Enter at least 2 characters'
+                      : null,
                 ),
                 const SizedBox(height: 18),
-                const Align(alignment: Alignment.centerLeft, child: Text('Icon', style: TextStyle(fontWeight: FontWeight.w700))),
+                const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Icon',
+                        style: TextStyle(fontWeight: FontWeight.w700))),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: _icons.map((icon) => _ChoiceCircle(
-                        selected: icon.codePoint == _icon.codePoint,
-                        onTap: () => setState(() => _icon = icon),
-                        child: Icon(icon, color: _color),
-                      )).toList(),
+                  children: _icons
+                      .map((icon) => _ChoiceCircle(
+                            selected: icon.codePoint == _icon.codePoint,
+                            onTap: () => setState(() => _icon = icon),
+                            child: Icon(icon, color: _color),
+                          ))
+                      .toList(),
                 ),
                 const SizedBox(height: 18),
-                const Align(alignment: Alignment.centerLeft, child: Text('Color', style: TextStyle(fontWeight: FontWeight.w700))),
+                const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Color',
+                        style: TextStyle(fontWeight: FontWeight.w700))),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: _colors.map((color) => _ChoiceCircle(
-                        selected: color.toARGB32() == _color.toARGB32(),
-                        onTap: () => setState(() => _color = color),
-                        child: Container(width: 22, height: 22, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-                      )).toList(),
+                  children: _colors
+                      .map((color) => _ChoiceCircle(
+                            selected: color.toARGB32() == _color.toARGB32(),
+                            onTap: () => setState(() => _color = color),
+                            child: Container(
+                                width: 22,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                    color: color, shape: BoxShape.circle)),
+                          ))
+                      .toList(),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
                     onPressed: _save,
-                    child: Text(widget.category == null ? 'Create category' : 'Save changes', style: const TextStyle(fontWeight: FontWeight.w700)),
+                    child: Text(
+                        widget.category == null
+                            ? 'Create category'
+                            : 'Save changes',
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
                   ),
                 ),
               ],
@@ -362,13 +413,18 @@ class _CategoryEditorSheetState extends State<_CategoryEditorSheet> {
     if (!_formKey.currentState!.validate()) return;
     Navigator.pop(
       context,
-      _CategoryDraft(name: _nameController.text.trim(), type: _type, icon: _icon, color: _color),
+      _CategoryDraft(
+          name: _nameController.text.trim(),
+          type: _type,
+          icon: _icon,
+          color: _color),
     );
   }
 }
 
 class _ChoiceCircle extends StatelessWidget {
-  const _ChoiceCircle({required this.selected, required this.onTap, required this.child});
+  const _ChoiceCircle(
+      {required this.selected, required this.onTap, required this.child});
   final bool selected;
   final VoidCallback onTap;
   final Widget child;
@@ -385,7 +441,9 @@ class _ChoiceCircle extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AppColors.primarySoft : AppColors.background,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: selected ? AppColors.primary : AppColors.border, width: selected ? 2 : 1),
+          border: Border.all(
+              color: selected ? AppColors.primary : AppColors.border,
+              width: selected ? 2 : 1),
         ),
         child: child,
       ),
@@ -394,7 +452,11 @@ class _ChoiceCircle extends StatelessWidget {
 }
 
 class _CategoryDraft {
-  const _CategoryDraft({required this.name, required this.type, required this.icon, required this.color});
+  const _CategoryDraft(
+      {required this.name,
+      required this.type,
+      required this.icon,
+      required this.color});
   final String name;
   final TransactionType type;
   final IconData icon;

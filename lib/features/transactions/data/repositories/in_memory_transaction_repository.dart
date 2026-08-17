@@ -22,7 +22,9 @@ class InMemoryTransactionRepository implements TransactionRepository {
   @override
   Future<void> update(TransactionEntry transaction) async {
     final index = _transactions.indexWhere((item) => item.id == transaction.id);
-    if (index == -1) throw StateError('Transaction not found: ${transaction.id}');
+    if (index == -1) {
+      throw StateError('Transaction not found: ${transaction.id}');
+    }
     _transactions[index] = transaction;
   }
 

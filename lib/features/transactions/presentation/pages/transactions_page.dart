@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../../../../core/widgets/app_state_view.dart';
 import '../../../accounts/presentation/controllers/account_controller.dart';
 import '../../../categories/presentation/controllers/category_controller.dart';
 import '../../../category_budgets/presentation/controllers/category_budget_controller.dart';
@@ -15,6 +17,7 @@ import '../widgets/add_transaction_sheet.dart';
 import '../../../dashboard/presentation/widgets/transaction_tile.dart';
 
 enum TransactionFilter { all, income, expense, transfer, reconciliation }
+
 enum TransactionPeriod { thisMonth, lastMonth, all }
 
 class TransactionsPage extends StatefulWidget {
@@ -51,14 +54,24 @@ class _TransactionsPageState extends State<TransactionsPage> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([widget.controller, widget.accountController, widget.categoryController, widget.categoryBudgetController]),
+      listenable: Listenable.merge([
+        widget.controller,
+        widget.accountController,
+        widget.categoryController,
+        widget.categoryBudgetController
+      ]),
       builder: (context, _) {
-        final transactions = _filteredTransactions(widget.controller.transactions);
-        final total = transactions.fold<double>(0, (sum, item) => sum + item.signedAmount);
+        final transactions =
+            _filteredTransactions(widget.controller.transactions);
+        final total = transactions.fold<double>(
+            0, (sum, item) => sum + item.signedAmount);
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Transactions', style: TextStyle(fontWeight: FontWeight.w800)),
+            title: const Text(
+              'Transactions',
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
             actions: [
               IconButton(
                 tooltip: 'Category budgets',
@@ -81,9 +94,49 @@ class _TransactionsPageState extends State<TransactionsPage> {
           body: RefreshIndicator(
             onRefresh: widget.controller.load,
             child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
               children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySoft,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.receipt_long_rounded,
+                          color: AppColors.primary),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Your money activity',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Review money in and out, then search or filter only when you need '
+                              'to find something specific.',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
                 _SummaryCard(count: transactions.length, total: total),
                 const SizedBox(height: 18),
                 TextField(
@@ -114,14 +167,24 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   scrollDirection: Axis.horizontal,
                   child: SegmentedButton<TransactionFilter>(
                     segments: const [
-                      ButtonSegment(value: TransactionFilter.all, label: Text('All')),
-                      ButtonSegment(value: TransactionFilter.income, label: Text('Income')),
-                      ButtonSegment(value: TransactionFilter.expense, label: Text('Expense')),
-                      ButtonSegment(value: TransactionFilter.transfer, label: Text('Transfer')),
-                      ButtonSegment(value: TransactionFilter.reconciliation, label: Text('Reconcile')),
+                      ButtonSegment(
+                          value: TransactionFilter.all, label: Text('All')),
+                      ButtonSegment(
+                          value: TransactionFilter.income,
+                          label: Text('Income')),
+                      ButtonSegment(
+                          value: TransactionFilter.expense,
+                          label: Text('Expense')),
+                      ButtonSegment(
+                          value: TransactionFilter.transfer,
+                          label: Text('Transfer')),
+                      ButtonSegment(
+                          value: TransactionFilter.reconciliation,
+                          label: Text('Reconcile')),
                     ],
                     selected: {_filter},
-                    onSelectionChanged: (value) => setState(() => _filter = value.first),
+                    onSelectionChanged: (value) =>
+                        setState(() => _filter = value.first),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -132,14 +195,22 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     prefixIcon: const Icon(Icons.calendar_month_outlined),
                     filled: true,
                     fillColor: Colors.white,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: BorderSide.none),
                   ),
                   items: const [
-                    DropdownMenuItem(value: TransactionPeriod.thisMonth, child: Text('This month')),
-                    DropdownMenuItem(value: TransactionPeriod.lastMonth, child: Text('Last month')),
-                    DropdownMenuItem(value: TransactionPeriod.all, child: Text('All time')),
+                    DropdownMenuItem(
+                        value: TransactionPeriod.thisMonth,
+                        child: Text('This month')),
+                    DropdownMenuItem(
+                        value: TransactionPeriod.lastMonth,
+                        child: Text('Last month')),
+                    DropdownMenuItem(
+                        value: TransactionPeriod.all, child: Text('All time')),
                   ],
-                  onChanged: (value) => setState(() => _period = value ?? _period),
+                  onChanged: (value) =>
+                      setState(() => _period = value ?? _period),
                 ),
                 const SizedBox(height: 20),
                 if (widget.controller.isLoading)
@@ -148,7 +219,11 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 else if (transactions.isEmpty)
-                  const _NoResults()
+                  AppStateView.empty(
+                    title: 'No matching transactions',
+                    message: 'Try another search, filter, or time period.',
+                    icon: Icons.search_off_rounded,
+                  )
                 else
                   ..._buildGroupedTransactions(transactions),
               ],
@@ -175,8 +250,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
       final now = DateTime.now();
       final lastMonth = DateTime(now.year, now.month - 1);
       final matchesPeriod = switch (_period) {
-        TransactionPeriod.thisMonth => item.date.year == now.year && item.date.month == now.month,
-        TransactionPeriod.lastMonth => item.date.year == lastMonth.year && item.date.month == lastMonth.month,
+        TransactionPeriod.thisMonth =>
+          item.date.year == now.year && item.date.month == now.month,
+        TransactionPeriod.lastMonth => item.date.year == lastMonth.year &&
+            item.date.month == lastMonth.month,
         TransactionPeriod.all => true,
       };
       return matchesQuery && matchesFilter && matchesPeriod;
@@ -188,14 +265,18 @@ class _TransactionsPageState extends State<TransactionsPage> {
     DateTime? previousDay;
 
     for (final transaction in transactions) {
-      final day = DateTime(transaction.date.year, transaction.date.month, transaction.date.day);
+      final day = DateTime(
+          transaction.date.year, transaction.date.month, transaction.date.day);
       if (previousDay != day) {
         widgets.add(
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
             child: Text(
               _dateGroupLabel(day),
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700),
             ),
           ),
         );
@@ -219,8 +300,11 @@ class _TransactionsPageState extends State<TransactionsPage> {
               margin: const EdgeInsets.only(bottom: 11),
               padding: const EdgeInsets.only(right: 22),
               alignment: Alignment.centerRight,
-              decoration: BoxDecoration(color: AppColors.expense, borderRadius: BorderRadius.circular(24)),
-              child: const Icon(Icons.delete_outline_rounded, color: Colors.white),
+              decoration: BoxDecoration(
+                  color: AppColors.expense,
+                  borderRadius: BorderRadius.circular(24)),
+              child:
+                  const Icon(Icons.delete_outline_rounded, color: Colors.white),
             ),
             child: TransactionTile(
               transaction: transaction,
@@ -240,7 +324,20 @@ class _TransactionsPageState extends State<TransactionsPage> {
     final today = DateTime(now.year, now.month, now.day);
     if (date == today) return 'TODAY';
     if (date == today.subtract(const Duration(days: 1))) return 'YESTERDAY';
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
@@ -268,7 +365,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
     );
     if (!mounted) return;
     await widget.recurringController.processDueTransactions(
-      activeAccountIds: widget.accountController.activeAccounts.map((account) => account.id).toSet(),
+      activeAccountIds: widget.accountController.activeAccounts
+          .map((account) => account.id)
+          .toSet(),
     );
     await widget.controller.load();
   }
@@ -290,7 +389,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
     final pair = widget.controller.transferPairFor(transaction);
     if (pair.length != 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This transfer pair is incomplete and cannot be changed safely.')),
+        const SnackBar(
+            content: Text(
+                'This transfer pair is incomplete and cannot be changed safely.')),
       );
       return;
     }
@@ -300,51 +401,55 @@ class _TransactionsPageState extends State<TransactionsPage> {
     final fromName = _accountName(outgoing.accountId);
     final toName = _accountName(incoming.accountId);
     final action = await showDialog<String>(
-          context: context,
-          builder: (dialogContext) => AlertDialog(
-            title: const Row(
-              children: [
-                Icon(Icons.swap_horiz_rounded, color: AppColors.primary),
-                SizedBox(width: 10),
-                Text('Transfer details'),
-              ],
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.swap_horiz_rounded, color: AppColors.primary),
+            SizedBox(width: 10),
+            Text('Transfer details'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              CurrencyFormatter.myr(outgoing.amount),
+              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  CurrencyFormatter.myr(outgoing.amount),
-                  style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 16),
-                _TransferDetailRow(label: 'From', value: fromName),
-                _TransferDetailRow(label: 'To', value: toName),
-                _TransferDetailRow(label: 'Date', value: _transferDate(outgoing.date)),
-                if (outgoing.title.isNotEmpty)
-                  _TransferDetailRow(label: 'Note', value: outgoing.title),
-                const SizedBox(height: 8),
-                const Text(
-                  'Cancelling removes both linked entries so account balances stay in sync.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.4),
-                ),
-              ],
+            const SizedBox(height: 14),
+            _TransferDetailRow(label: 'From', value: fromName),
+            _TransferDetailRow(label: 'To', value: toName),
+            _TransferDetailRow(
+                label: 'Date', value: _transferDate(outgoing.date)),
+            if (outgoing.title.isNotEmpty)
+              _TransferDetailRow(label: 'Note', value: outgoing.title),
+            const SizedBox(height: 8),
+            const Text(
+              'Cancelling removes both linked entries so account balances stay in sync.',
+              style: TextStyle(
+                  color: AppColors.textSecondary, fontSize: 12, height: 1.4),
             ),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close')),
-              TextButton.icon(
-                onPressed: () => Navigator.pop(dialogContext, 'edit'),
-                icon: const Icon(Icons.edit_outlined),
-                label: const Text('Edit'),
-              ),
-              FilledButton.icon(
-                onPressed: () => Navigator.pop(dialogContext, 'cancel'),
-                icon: const Icon(Icons.undo_rounded),
-                label: const Text('Cancel transfer'),
-              ),
-            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Close')),
+          TextButton.icon(
+            onPressed: () => Navigator.pop(dialogContext, 'edit'),
+            icon: const Icon(Icons.edit_outlined),
+            label: const Text('Edit'),
           ),
-        );
+          FilledButton.icon(
+            onPressed: () => Navigator.pop(dialogContext, 'cancel'),
+            icon: const Icon(Icons.undo_rounded),
+            label: const Text('Cancel transfer'),
+          ),
+        ],
+      ),
+    );
 
     if (action == 'edit') {
       await _editTransfer(transaction);
@@ -355,7 +460,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
     if (!mounted) return;
     if (removed == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.controller.errorMessage ?? 'Unable to cancel the transfer.')),
+        SnackBar(
+            content: Text(widget.controller.errorMessage ??
+                'Unable to cancel the transfer.')),
       );
       return;
     }
@@ -376,7 +483,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
   Future<void> _editTransfer(TransactionEntry transaction) async {
     if (widget.accountController.accounts.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add at least two accounts before editing a transfer.')),
+        const SnackBar(
+            content:
+                Text('Add at least two accounts before editing a transfer.')),
       );
       return;
     }
@@ -404,7 +513,20 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   String _transferDate(DateTime date) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
@@ -428,19 +550,23 @@ class _TransactionsPageState extends State<TransactionsPage> {
               '${transaction.isIncome ? '+' : '-'}${CurrencyFormatter.myr(transaction.amount)}',
               style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             _TransferDetailRow(label: 'Account', value: accountName),
-            _TransferDetailRow(label: 'Date', value: _transferDate(transaction.date)),
+            _TransferDetailRow(
+                label: 'Date', value: _transferDate(transaction.date)),
             _TransferDetailRow(label: 'Note', value: transaction.title),
             const SizedBox(height: 8),
             const Text(
               'This is a balance correction. It affects the account balance but is excluded from income and expense reporting. Swipe it left to remove the adjustment.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.4),
+              style: TextStyle(
+                  color: AppColors.textSecondary, fontSize: 12, height: 1.4),
             ),
           ],
         ),
         actions: [
-          FilledButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Done')),
+          FilledButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Done')),
         ],
       ),
     );
@@ -460,19 +586,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
     );
   }
 
-  Future<bool> _confirmDelete(TransactionEntry transaction) async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Delete transaction?'),
-            content: Text('${transaction.title} will be permanently removed.'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-              FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
-            ],
-          ),
-        ) ??
-        false;
+  Future<bool> _confirmDelete(TransactionEntry transaction) {
+    return AppConfirmDialog.destructive(
+      context,
+      title: 'Delete transaction?',
+      message:
+          '${transaction.title} will be removed from your transaction history.',
+      confirmLabel: 'Delete',
+    );
   }
 
   Future<void> _deleteWithUndo(TransactionEntry transaction) async {
@@ -507,9 +628,13 @@ class _TransferDetailRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 54,
-            child: Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+            child: Text(label,
+                style: const TextStyle(
+                    color: AppColors.textSecondary, fontSize: 12)),
           ),
-          Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w700))),
+          Expanded(
+              child: Text(value,
+                  style: const TextStyle(fontWeight: FontWeight.w700))),
         ],
       ),
     );
@@ -527,7 +652,8 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF826CEB), AppColors.primaryDark]),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF826CEB), AppColors.primaryDark]),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
@@ -536,40 +662,28 @@ class _SummaryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Filtered total', style: TextStyle(color: Color(0xFFDCD6FF))),
+                const Text('Filtered total',
+                    style: TextStyle(color: Color(0xFFDCD6FF))),
                 const SizedBox(height: 5),
                 Text(
                   CurrencyFormatter.myr(total, showSign: true),
-                  style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.w800),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 23,
+                      fontWeight: FontWeight.w800),
                 ),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: .14), borderRadius: BorderRadius.circular(18)),
-            child: Text('$count records', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .14),
+                borderRadius: BorderRadius.circular(18)),
+            child: Text('$count records',
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600)),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NoResults extends StatelessWidget {
-  const _NoResults();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 48),
-      child: Column(
-        children: [
-          Icon(Icons.search_off_rounded, color: AppColors.textSecondary, size: 42),
-          SizedBox(height: 12),
-          Text('No matching transactions', style: TextStyle(fontWeight: FontWeight.w700)),
-          SizedBox(height: 5),
-          Text('Try another search or filter.', style: TextStyle(color: AppColors.textSecondary)),
         ],
       ),
     );

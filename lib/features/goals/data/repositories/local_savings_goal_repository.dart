@@ -31,13 +31,15 @@ class LocalSavingsGoalRepository implements SavingsGoalRepository {
 
   @override
   Future<void> replaceAll(List<SavingsGoal> goals) async {
-    final raw = jsonEncode(goals.map((goal) => {
-      'id': goal.id,
-      'name': goal.name,
-      'targetAmount': goal.targetAmount,
-      'accountId': goal.accountId,
-      'deadline': goal.deadline.toIso8601String(),
-    }).toList());
+    final raw = jsonEncode(goals
+        .map((goal) => {
+              'id': goal.id,
+              'name': goal.name,
+              'targetAmount': goal.targetAmount,
+              'accountId': goal.accountId,
+              'deadline': goal.deadline.toIso8601String(),
+            })
+        .toList());
     await _preferences.setString(_key, raw);
   }
 }

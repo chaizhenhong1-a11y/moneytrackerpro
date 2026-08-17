@@ -33,15 +33,17 @@ class LocalDebtRepository implements DebtRepository {
 
   @override
   Future<void> replaceAll(List<Debt> debts) async {
-    final raw = jsonEncode(debts.map((debt) => {
-      'id': debt.id,
-      'name': debt.name,
-      'type': debt.type.name,
-      'originalAmount': debt.originalAmount,
-      'currentBalance': debt.currentBalance,
-      'interestRate': debt.interestRate,
-      'dueDate': debt.dueDate.toIso8601String(),
-    }).toList());
+    final raw = jsonEncode(debts
+        .map((debt) => {
+              'id': debt.id,
+              'name': debt.name,
+              'type': debt.type.name,
+              'originalAmount': debt.originalAmount,
+              'currentBalance': debt.currentBalance,
+              'interestRate': debt.interestRate,
+              'dueDate': debt.dueDate.toIso8601String(),
+            })
+        .toList());
     await _preferences.setString(_key, raw);
   }
 }

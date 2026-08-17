@@ -23,14 +23,18 @@ class RecurringTransactionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([controller, accountController, categoryController]),
+      listenable:
+          Listenable.merge([controller, accountController, categoryController]),
       builder: (context, _) => Scaffold(
         appBar: AppBar(
-          title: const Text('Recurring', style: TextStyle(fontWeight: FontWeight.w800)),
+          title: const Text('Recurring',
+              style: TextStyle(fontWeight: FontWeight.w800)),
           actions: [
             IconButton(
               tooltip: 'Add recurring transaction',
-              onPressed: accountController.activeAccounts.isEmpty ? null : () => _openAdd(context),
+              onPressed: accountController.activeAccounts.isEmpty
+                  ? null
+                  : () => _openAdd(context),
               icon: const Icon(Icons.add_rounded),
             ),
             const SizedBox(width: 8),
@@ -45,12 +49,19 @@ class RecurringTransactionsPage extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(22)),
+                        decoration: BoxDecoration(
+                            color: AppColors.primarySoft,
+                            borderRadius: BorderRadius.circular(22)),
                         child: const Row(
                           children: [
-                            Icon(Icons.auto_awesome_rounded, color: AppColors.primary),
+                            Icon(Icons.auto_awesome_rounded,
+                                color: AppColors.primary),
                             SizedBox(width: 12),
-                            Expanded(child: Text('Due rules are posted automatically when MoneyTracker opens.', style: TextStyle(fontWeight: FontWeight.w600))),
+                            Expanded(
+                                child: Text(
+                                    'Due rules are posted automatically when MoneyTracker opens.',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600))),
                           ],
                         ),
                       ),
@@ -90,7 +101,8 @@ class RecurringTransactionsPage extends StatelessWidget {
     );
   }
 
-  Future<void> _openEdit(BuildContext context, RecurringTransactionRule rule) async {
+  Future<void> _openEdit(
+      BuildContext context, RecurringTransactionRule rule) async {
     final accounts = accountController.activeAccounts;
     if (accounts.isEmpty) return;
     await showModalBottomSheet<void>(
@@ -106,15 +118,21 @@ class RecurringTransactionsPage extends StatelessWidget {
     );
   }
 
-  Future<void> _delete(BuildContext context, RecurringTransactionRule rule) async {
+  Future<void> _delete(
+      BuildContext context, RecurringTransactionRule rule) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete recurring rule?'),
-        content: Text('Future “${rule.title}” transactions will no longer be created. Existing transactions stay unchanged.'),
+        content: Text(
+            'Future “${rule.title}” transactions will no longer be created. Existing transactions stay unchanged.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
+          FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Delete')),
         ],
       ),
     );
@@ -153,33 +171,49 @@ class _RuleCard extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: rule.isPaused ? AppColors.border : AppColors.primarySoft,
-              child: Icon(rule.isPaused ? Icons.pause_rounded : Icons.repeat_rounded, color: AppColors.primary),
+              backgroundColor:
+                  rule.isPaused ? AppColors.border : AppColors.primarySoft,
+              child: Icon(
+                  rule.isPaused ? Icons.pause_rounded : Icons.repeat_rounded,
+                  color: AppColors.primary),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(rule.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  Text(rule.title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 4),
                   Text(
                     '$frequency • $accountName',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 12),
                   ),
                   const SizedBox(height: 3),
                   Text(
                     '$duePreview • ${rule.nextDueDate.day}/${rule.nextDueDate.month}/${rule.nextDueDate.year}',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600),
                   ),
-                  if (rule.isPaused) const Padding(padding: EdgeInsets.only(top: 4), child: Text('Paused', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700))),
+                  if (rule.isPaused)
+                    const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Text('Paused',
+                            style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w700))),
                 ],
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('$sign${CurrencyFormatter.myr(rule.amount)}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                Text('$sign${CurrencyFormatter.myr(rule.amount)}',
+                    style: const TextStyle(fontWeight: FontWeight.w800)),
                 PopupMenuButton<String>(
                   onSelected: (value) {
                     switch (value) {
@@ -196,7 +230,9 @@ class _RuleCard extends StatelessWidget {
                   },
                   itemBuilder: (_) => [
                     const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                    PopupMenuItem(value: 'pause', child: Text(rule.isPaused ? 'Resume' : 'Pause')),
+                    PopupMenuItem(
+                        value: 'pause',
+                        child: Text(rule.isPaused ? 'Resume' : 'Pause')),
                     const PopupMenuItem(value: 'delete', child: Text('Delete')),
                   ],
                 ),
@@ -232,13 +268,21 @@ class _EmptyState extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.event_repeat_rounded, size: 58, color: AppColors.primary),
+              const Icon(Icons.event_repeat_rounded,
+                  size: 58, color: AppColors.primary),
               const SizedBox(height: 18),
-              const Text('No recurring transactions yet', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+              const Text('No recurring transactions yet',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
               const SizedBox(height: 8),
-              const Text('Automate salary, rent, subscriptions, insurance and other repeating money movements.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary)),
+              const Text(
+                  'Automate salary, rent, subscriptions, insurance and other repeating money movements.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: AppColors.textSecondary)),
               const SizedBox(height: 20),
-              FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add_rounded), label: const Text('Create recurring rule')),
+              FilledButton.icon(
+                  onPressed: onAdd,
+                  icon: const Icon(Icons.add_rounded),
+                  label: const Text('Create recurring rule')),
             ],
           ),
         ),
